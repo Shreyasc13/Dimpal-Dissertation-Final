@@ -1,0 +1,10 @@
+scenario,aog_cost_per_hr_inr,exposure_per_event_inr
+"Low
+(narrowbody,
+domestic)",960000.0,17280000.0
+"Mid
+(narrowbody,
+typical)",4320000.0,77760000.0
+"High
+(widebody,
+peak)",14400000.0,259200000.0
