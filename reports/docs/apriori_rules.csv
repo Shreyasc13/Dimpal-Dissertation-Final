@@ -1,13 +1,7 @@
 antecedents,consequents,support,confidence,lift
-Wheel Unit,Seal Kit,0.2,0.727,1.164
-Seal Kit,Wheel Unit,0.2,0.32,1.164
-"Brake Assembly, Wheel Unit",Seal Kit,0.2,0.727,1.164
-"Brake Assembly, Seal Kit",Wheel Unit,0.2,0.32,1.164
-Wheel Unit,"Brake Assembly, Seal Kit",0.2,0.727,1.164
-Seal Kit,"Brake Assembly, Wheel Unit",0.2,0.32,1.164
-Structural Bolt Set,Seal Kit,0.4,0.667,1.067
-"Brake Assembly, Structural Bolt Set",Seal Kit,0.4,0.667,1.067
-Structural Bolt Set,"Brake Assembly, Seal Kit",0.4,0.667,1.067
-Seal Kit,Structural Bolt Set,0.4,0.64,1.067
-"Brake Assembly, Seal Kit",Structural Bolt Set,0.4,0.64,1.067
-Seal Kit,"Brake Assembly, Structural Bolt Set",0.4,0.64,1.067
+Landing Gear Actuator,Hydraulic Line,0.176,0.295,1.203
+Hydraulic Line,Landing Gear Actuator,0.176,0.718,1.203
+Wheel Unit,Landing Gear Actuator,0.569,0.696,1.166
+Landing Gear Actuator,Wheel Unit,0.569,0.953,1.166
+Wheel Unit,Hydraulic Line,0.214,0.262,1.069
+Hydraulic Line,Wheel Unit,0.214,0.873,1.069

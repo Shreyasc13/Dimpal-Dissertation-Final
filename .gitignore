@@ -6,3 +6,4 @@ data/raw/*
 !data/raw/DATA_SETUP.md
 data/processed/*
 .DS_Store
+~$*
