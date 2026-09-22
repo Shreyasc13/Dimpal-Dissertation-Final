@@ -50,12 +50,13 @@ axes[0].set_ylim(50, 70)
 axes[0].set_ylabel("Landing Gear Actuator failure rate (%)")
 axes[0].set_title("By runway condition\n(barely moves)", fontsize=11)
 
-df["load_q"] = pd.qcut(df["load_during_landing"], 5, labels=["Q1\n(lowest)", "Q2", "Q3", "Q4", "Q5\n(highest)"])
-ld_rates = df.groupby("load_q", observed=True)[TARGET_FLAG].mean()
+LOAD_LABELS = ["Lightest\n20%", "2nd\nlightest", "Middle\n20%", "2nd\nheaviest", "Heaviest\n20%"]
+df["load_q"] = pd.qcut(df["load_during_landing"], 5, labels=LOAD_LABELS)
+ld_rates = df.groupby("load_q", observed=True)[TARGET_FLAG].mean().reindex(LOAD_LABELS)
 axes[1].bar(ld_rates.index.astype(str), ld_rates.values * 100, color=AMBER, width=0.55)
 axes[1].set_ylim(0, 100)
 axes[1].set_ylabel("Landing Gear Actuator failure rate (%)")
-axes[1].set_title("By landing-load quintile\n(strong upward trend)", fontsize=11)
+axes[1].set_title("By landing weight, lightest to heaviest\n(strong upward trend)", fontsize=11)
 
 fig.suptitle("What actually drives Landing Gear Actuator failure: landing load, not weather", fontsize=13, fontweight="bold", y=1.03)
 fig.tight_layout()

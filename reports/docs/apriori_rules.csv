@@ -1,6 +1,6 @@
 antecedents,consequents,support,confidence,lift
-Landing Gear Actuator,Hydraulic Line,0.176,0.295,1.203
 Hydraulic Line,Landing Gear Actuator,0.176,0.718,1.203
+Landing Gear Actuator,Hydraulic Line,0.176,0.295,1.203
 Wheel Unit,Landing Gear Actuator,0.569,0.696,1.166
 Landing Gear Actuator,Wheel Unit,0.569,0.953,1.166
 Wheel Unit,Hydraulic Line,0.214,0.262,1.069
