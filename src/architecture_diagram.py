@@ -27,16 +27,13 @@ def arrow(b1, b2, side1="right", side2="left", color="#5a6472"):
     ax.add_patch(FancyArrowPatch(p1, p2, arrowstyle="-|>", mutation_scale=14,
                                   color=color, linewidth=1.4))
 
-# Row 1: Data sources
-d1 = box(0.2, 5.0, 2.1, 1.1, "Airbus Landing Gear\nsensor data (Kaggle)", TEAL)
-d2 = box(0.2, 3.6, 2.1, 1.1, "Maintenance teardown\nlogs", TEAL)
-d3 = box(0.2, 2.2, 2.1, 1.1, "Flight-cycle & fleet\nconfiguration data", TEAL)
+# Data source — one real Kaggle dataset (10,000 landings, 12 columns:
+# operating conditions + 4 part failure/wear flags)
+d1 = box(0.2, 3.15, 2.1, 1.9, "Landing-gear maintenance\ndataset (Kaggle)\n10,000 real landings", TEAL)
 
 # Preprocessing
-pp = box(2.9, 3.6, 2.0, 1.3, "Preprocessing &\nfeature engineering\n(wear index, env. flags)", NAVY)
+pp = box(2.9, 3.6, 2.0, 1.3, "Preprocessing &\nfeature engineering\n(flag → part mapping,\nseverity features)", NAVY)
 arrow(d1, pp, "right", "left")
-arrow(d2, pp, "right", "left")
-arrow(d3, pp, "right", "left")
 
 # Analytics core (3 parallel engines)
 abc = box(5.5, 4.9, 2.1, 1.1, "ABC/XYZ dual-matrix\nclassification", NAVY)
@@ -55,7 +52,7 @@ arrow(mba, biz, "right", "left")
 dash = box(8.15, 0.5, 2.05, 1.1, "Supplier-facing\ninteractive dashboard", GREY, fontcolor="#22262b")
 arrow(biz, dash, "bottom", "top")
 
-ax.text(0.2, 0.35, "Excluded from scope: live telemetry / weather API streaming (per Section 4, Scope of Work)",
+ax.text(0.2, 0.35, "Excluded from scope: live telemetry / weather API streaming",
         fontsize=8.5, color="#6b7482", style="italic")
 
 ax.text(0.1, 6.15, "System Architecture — Predictive Spare-Parts Demand Forecasting Pipeline",
