@@ -43,7 +43,7 @@ for a, b in [(d1, pp), (pp, cls), (cls, fc), (fc, cost)]:
 arrow(cost, dash, "right", "left")
 
 # --- Optional branch (dashed): preprocessing -> companion-parts mining -> dashboard ---
-mba = box(4.15, 1.1, 1.85, 1.3, "Companion-Parts\nMining (Apriori)\n— optional module", NAVY)
+mba = box(4.15, 1.1, 1.85, 1.3, "Companion-Parts\nMining (Apriori)\nmodule", NAVY)
 arrow(pp, mba, "bottom", "top", dashed=True)
 arrow(mba, dash, "right", "left", dashed=True)
 
@@ -57,5 +57,5 @@ ax.text(0.15, 0.2, "Excluded from scope: live telemetry / weather API streaming"
         fontsize=8.3, color="#6b7482", style="italic")
 
 fig.tight_layout()
-fig.savefig(FIG / "00_architecture.png", dpi=170)
+fig.savefig(FIG / "00_architecture.png", dpi=300)
 print("Saved architecture diagram")
