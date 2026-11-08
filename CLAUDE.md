@@ -43,7 +43,20 @@ LightGBM feature importance (gain): load 99.1%, landing_cycles 0.7%, everything 
 Env note: **lightgbm 4.7.0 crashes** (access violation) on this machine with Python 3.12.0, so it's pinned to **lightgbm==4.6.0**. numpy must stay ≥2.3.5 for mlxtend.
 Outputs: `reports/docs/phase5_*.csv`, `reports/figures/07–09_phase5_*.png`.
 
-### ▶ RESUME HERE (session paused 2026-11-08 evening)
+### Phase 6 results (2026-11-08) — `src/phase6_reorder_engine.py` (run after phase5)
+Each 200-landing batch = one planning period; the shelf is topped up to target = forecast + z × (typical error). Typical error is measured on the OTHER folds only. z comes from the newsvendor ratio: short cost (1 AOG event) ÷ (short cost + holding cost of 1 unit for 1 batch = ₹1,08,000). That gives target service 99.38% / 99.86% / 99.96% (z 2.50 / 2.99 / 3.34) for Low/Mid/High.
+| Mid AOG scenario | Avg safety buffer | Batches short | Cost/yr |
+|---|---|---|---|
+| Constant baseline | 22.8 units | 0 | ₹2.46 cr |
+| LightGBM | 2.0 units | 0 | ₹0.21 cr |
+| Random Forest | 1.0 unit | 0 | ₹0.10 cr |
+Low: 2.05 / 0.20 / 0.10 cr. High: 2.74 / 0.22 / 0.11 cr. **No method ran short in any of the 50 batches**, so all the savings come from holding ~20 fewer spare units for the same protection: about ₹1.85–2.5 cr/yr with LightGBM. Honest caveat: 50 batches is too few to test rare stockouts properly.
+Assumptions to disclose: 2,000 landings/yr (batch = 0.1 yr); orders arrive before the batch starts; each unit short = one 18-h AOG event; the forecast uses the landing's own conditions (in real use, these would come from flight plans/known cycle counts).
+Scale note: forecast demand is ~119 actuators per 200 landings (because the simulated failure rate is 60%). That's unrealistically high for real aircraft, and it doesn't sit well with the midterm's "4 spare units" holding example. Flag it as a dataset artefact.
+Outputs: `reports/docs/phase6_*.csv`, `reports/figures/10_phase6_total_cost.png`, `11_phase6_stock_levels.png`.
+**Status: Phases 5 and 6 DONE. Next: Phase 7 (supplier dashboard) + final report.**
+
+### ▶ RESUME HERE (session paused 2026-11-08 evening — now superseded by Phase 5/6 sections above)
 - **Dataset:** downloaded again and placed at `data/raw/landing_gear/landing_gear_maintenance_simulated_data.xlsx`. Checked on 2026-11-08: 10,000×12, no missing values. Failure rates, runway rates, per-runway correlations (0.814/0.823/0.827) and baseline (mean 119.44, MAE 5.52) all match the report exactly.
 - **Python:** the old 32-bit Python 3.8 can't install mlxtend/scipy or LightGBM, so don't use it. User installed **64-bit Python 3.12** at `C:\Users\Lenovo\AppData\Local\Programs\Python\Python312\python.exe`. The project `.venv` was rebuilt on it.
 - **Install was interrupted:** `.venv` has pandas, openpyxl, matplotlib, scikit-learn. **Still missing: mlxtend, lightgbm.** The download was very slow (over 10 min). Finish with: `.\.venv\Scripts\python.exe -m pip install mlxtend lightgbm`, then check the imports.
