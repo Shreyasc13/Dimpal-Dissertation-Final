@@ -1,0 +1,5 @@
+method,batch_MAE
+"Original baseline (all-batch average, as in midterm report)",5.52
+Fair baseline (training-batch average only),6.175999999999997
+"Random Forest (tuned, tested on unseen batches)",0.09759999999999963
+"LightGBM (tuned, tested on unseen batches)",0.2987764889896124

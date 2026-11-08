@@ -1,0 +1,6 @@
+fold,test_batches,lgb_params,rf_params
+1,13 17 19 25 26 30 32 39 45 48,"{'num_leaves': 15, 'learning_rate': 0.03, 'n_estimators': 300, 'min_child_samples': 20}","{'n_estimators': 300, 'min_samples_leaf': 1, 'max_features': 0.6}"
+2,3 4 6 8 12 15 37 41 46 47,"{'num_leaves': 7, 'learning_rate': 0.03, 'n_estimators': 300, 'min_child_samples': 20}","{'n_estimators': 300, 'min_samples_leaf': 1, 'max_features': 0.6}"
+3,0 5 9 16 24 27 31 33 34 44,"{'num_leaves': 7, 'learning_rate': 0.03, 'n_estimators': 300, 'min_child_samples': 20}","{'n_estimators': 300, 'min_samples_leaf': 1, 'max_features': 0.6}"
+4,1 2 11 21 23 29 35 36 40 43,"{'num_leaves': 7, 'learning_rate': 0.03, 'n_estimators': 300, 'min_child_samples': 20}","{'n_estimators': 300, 'min_samples_leaf': 1, 'max_features': 0.6}"
+5,7 10 14 18 20 22 28 38 42 49,"{'num_leaves': 7, 'learning_rate': 0.03, 'n_estimators': 300, 'min_child_samples': 20}","{'n_estimators': 300, 'min_samples_leaf': 1, 'max_features': 0.6}"

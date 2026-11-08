@@ -1,0 +1,9 @@
+,gain_pct
+load_during_landing,99.1357887870119
+landing_cycles,0.6894508793646256
+tire_pressure,0.05940285552547839
+speed_during_landing,0.03908437130413553
+braking_force,0.02919115750156292
+taxiing_duration,0.02740324233988039
+hydraulic_pressure,0.01967870695241169
+runway_condition,0.0
