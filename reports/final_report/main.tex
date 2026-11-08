@@ -12,7 +12,7 @@
 % =====================================================================
 \documentclass[12pt,oneside]{report}
 
-\usepackage[paperwidth=9in,paperheight=11in,margin=1in,headheight=15pt]{geometry}
+\usepackage[paperwidth=9in,paperheight=11in,margin=1in,headheight=15pt,includefoot]{geometry} % includefoot: page number stays inside the 1" margin
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage{lmodern}
@@ -33,6 +33,9 @@
 \captionsetup{font=small,labelfont=bf}
 \setlist{nosep,leftmargin=*}
 \newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\setlength{\emergencystretch}{3em}
+\setlength{\parindent}{0pt}         % no first-line indent anywhere (consistent look)
+\setlength{\parskip}{6pt}           % small gap between paragraphs instead   % lets long words/numbers wrap instead of sticking out
 
 % Chapter headings: "1. Introduction" instead of the large "Chapter 1" block
 \titleformat{\chapter}[hang]{\Large\bfseries}{\thechapter.}{0.6em}{}
@@ -56,8 +59,8 @@
 \newcommand{\Discipline}{M.Tech. Software Systems}
 \newcommand{\CourseNo}{S1-26\_SSZG628T}
 \newcommand{\OrgName}{Airbus India Pvt Ltd}
-\newcommand{\OrgPlace}{Bangalore}
-\newcommand{\SubmitMonth}{\fillin{Month, Year of submission}}
+\newcommand{\OrgPlace}{Bengaluru}
+\newcommand{\SubmitMonth}{November 2026}
 
 \begin{document}
 
@@ -79,7 +82,7 @@
 \vspace{1.2in}
 
 {\large\bfseries AT\par}\vspace{1em}
-{\bfseries \fillin{Station Name and Centre}\par}\vspace{0.4em}
+{\bfseries Bengaluru, Karnataka\par}\vspace{0.4em}
 {\bfseries \OrgName, \OrgPlace\par}
 \vfill
 {\bfseries BIRLA INSTITUTE OF TECHNOLOGY \& SCIENCE, PILANI\par}\vspace{0.4em}
@@ -124,15 +127,13 @@ WILP Dissertation Course (\CourseNo)
 \chapter*{Acknowledgements}
 \addcontentsline{toc}{chapter}{Acknowledgements}
 
-I would like to thank \fillin{Name, designation of the Head of the organisation}, \OrgName, for giving me the chance to carry out this dissertation as part of my work.
+I am grateful to my supervisor, Saurabh Mahajan, HO of Architecture, \OrgName, for the direction, time and honest feedback given at every stage of the project.
 
-I am grateful to my supervisor, Mr.\ Saurabh Mahajan, and my additional examiner, Mr.\ Karthik Mahadevan, for their guidance, their time and their honest feedback at every stage of the project.
+I thank my additional examiner, Karthik Mahadevan, Digital Sourcing Lead, \OrgName, for reviewing my work and for the helpful suggestions.
 
-I thank \fillin{Name of the professional expert / in-charge of the project, or delete this line} for sharing practical knowledge of how spare parts are planned in aircraft maintenance.
+I thank my faculty mentor, Ashish Narang, BITS Pilani, for the guidance and support given throughout this dissertation.
 
-I thank my faculty mentor, \fillin{Name of faculty mentor}, BITS Pilani, for the support and advice given during the semester.
-
-Finally, I thank my colleagues, family and friends for their encouragement throughout this work.
+I also thank my manager, PhaniKiran Vemagal, \OrgName, for supporting me in carrying out this work alongside my role.
 
 \vspace{2em}
 \noindent\StudentName\\
@@ -152,14 +153,14 @@ Finally, I thank my colleagues, family and friends for their encouragement throu
 \noindent
 \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{4.6cm} L@{}}
 \textbf{Organization:} & \OrgName \hfill \textbf{Location:} \OrgPlace\\[3pt]
-\textbf{Duration:} & \fillin{e.g. 16 weeks} \hfill \textbf{Date of Start:} \fillin{dd Mon yyyy}\\[3pt]
-\textbf{Date of Submission:} & \fillin{dd Mon yyyy}\\[3pt]
+\textbf{Duration:} & 13 weeks \hfill \textbf{Date of Start:} 08 August 2026\\[3pt]
+\textbf{Date of Submission:} & 10 November 2026\\[3pt]
 \textbf{Title of the Project:} & Demand Forecasting in Inventory Management\\[3pt]
 \textbf{ID No./Name of the student:} & \StudentID{} / \StudentName\\[3pt]
 \textbf{Name(s) and Designation(s) of Supervisor and Additional Examiner:} &
-  Saurabh Mahajan, \fillin{designation}, \OrgName{} (Supervisor)\newline
-  Karthik Mahadevan, \fillin{designation}, \OrgName{} (Additional Examiner)\\[3pt]
-\textbf{Name of the Faculty mentor:} & \fillin{Name of faculty mentor}\\[3pt]
+  Saurabh Mahajan, HO of Architecture, \OrgName{}\newline
+  Karthik Mahadevan, Digital Sourcing Lead, \OrgName{}\\[3pt]
+\textbf{Name of the Faculty mentor:} & Ashish Narang\\[3pt]
 \textbf{Key Words:} & Spare-parts demand forecasting; LightGBM; ABC/XYZ classification; safety stock; Aircraft On Ground (AOG); landing gear; Apriori\\[3pt]
 \textbf{Project Areas:} & Predictive Analytics; Machine Learning; Inventory Management\\
 \end{tabularx}
@@ -173,7 +174,7 @@ Airlines need the right spare parts ready before an aircraft comes in for repair
 \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}ll}
 \rule{2.2in}{0.4pt} & \rule{2.2in}{0.4pt}\\
 Signature of Student & Signature of Supervisor\\
-Date: & Date:\\
+Date: 09-11-2026 & Date: 09-11-2026\\
 \end{tabular*}
 \end{singlespace}
 
@@ -211,11 +212,7 @@ The opposite mistake is also costly. Keeping many spare parts ``just in case'' t
 Today, most spare parts are reordered on a fixed schedule based on flight hours or flight cycles. A fixed schedule treats every aircraft the same. It does not look at how each aircraft was actually used, for example how hard it landed or how heavily it was loaded.
 
 \section{Problem statement}
-The problem this project addresses is:
-
-\begin{quote}
-\emph{How can landing-by-landing operating data be used to forecast demand for a high-value landing-gear spare part, and to turn that forecast into a stock decision that balances the cost of running out against the cost of holding stock?}
-\end{quote}
+This project addresses the following problem: how can landing-by-landing operating data be used to forecast demand for a high-value landing-gear spare part, and to turn that forecast into a stock decision that balances the cost of running out against the cost of holding stock?
 
 \section{Objectives}
 \begin{enumerate}
@@ -240,19 +237,7 @@ The work was carried out in seven phases:
 \item Building the reorder engine and checking it against the cost model.
 \item Building the supplier dashboard and writing this report.
 \end{enumerate}
-All analysis was done in Python. Every number in this report was produced by the project scripts listed in Appendix~\ref{app:repro}, and can be reproduced by running them.
-
-\section{Changes since the midterm report}
-\label{sec:changes}
-Three things changed after the midterm report, and they are stated here openly.
-\begin{enumerate}
-\item \textbf{The data is simulated.} The midterm report described the dataset as ``10,000 real aircraft landings''. That was wrong. The Kaggle file is a real public file, but its contents are \emph{simulated}: each failure flag follows a fixed rule (Section~\ref{sec:rules}). This report uses the word ``simulated'' and explains what this means for the results.
-\item \textbf{A fairer baseline.} The midterm baseline error of 5.52 units per batch used an average taken over all 50 batches, including the batch being predicted. To test fairly, the baseline in this report uses only the batches it was trained on. Its error is 6.18 (Section~\ref{sec:p5results}).
-\item \textbf{Random Forest did slightly better than LightGBM.} LightGBM was chosen in advance as the main model (Chapter~\ref{ch:design}). In the test, Random Forest was a little more accurate. Both results are reported (Chapter~\ref{ch:model}).
-\end{enumerate}
-
-\section{Organisation of the report}
-Chapter~\ref{ch:lit} reviews related work. Chapter~\ref{ch:data} describes the dataset and the checks made on it. Chapter~\ref{ch:design} explains the system design and the choice of model. Chapter~\ref{ch:eda} covers the data analysis, the baseline, the classification and the companion-part rules. Chapter~\ref{ch:model} covers model training and tuning. Chapter~\ref{ch:reorder} turns the forecast into stock and order decisions. Chapter~\ref{ch:dash} describes the supplier dashboard. Chapter~\ref{ch:limits} lists the limitations. Chapter~\ref{ch:concl} gives the conclusions and recommendations.
+All analysis was done in Python. Every number in this report was produced by the project's Python scripts and can be reproduced by running them.
 
 % ---------------------------------------------------------------------
 \chapter{Literature Review and Gap Analysis}
@@ -299,7 +284,7 @@ Table~\ref{tab:columns} lists the columns. Eight describe the conditions of the 
 
 \begin{table}[htbp]
 \centering\small
-\caption{Dataset columns}
+\caption[Dataset columns]{Dataset columns}
 \label{tab:columns}
 \begin{tabularx}{\textwidth}{@{}lL@{}}
 \toprule
@@ -327,7 +312,7 @@ Each flag was mapped to one spare part (Table~\ref{tab:parts}). This mapping is 
 
 \begin{table}[htbp]
 \centering\small
-\caption{Failure flags mapped to spare parts}
+\caption[Failure flags mapped to spare parts]{Failure flags mapped to spare parts}
 \label{tab:parts}
 \begin{tabular}{@{}llr@{}}
 \toprule
@@ -350,7 +335,7 @@ During model training (Chapter~\ref{ch:model}) the models became almost perfect.
 
 \begin{table}[htbp]
 \centering\small
-\caption{Exact rules behind each failure flag (each matches 10,000 of 10,000 rows)}
+\caption[Rules behind each failure flag]{Exact rules behind each failure flag (each matches 10,000 of 10,000 rows)}
 \label{tab:rules}
 \begin{tabular}{@{}ll@{}}
 \toprule
@@ -383,7 +368,7 @@ Figure~\ref{fig:arch} shows how data flows through the system. The main path is 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\textwidth]{00_architecture.png}
-\caption{System architecture. The solid path is always used; the dashed branch (companion parts) is optional.}
+\caption[System architecture]{System architecture. The solid path is always used; the dashed branch (companion parts) is optional.}
 \label{fig:arch}
 \end{figure}
 
@@ -392,9 +377,9 @@ Table~\ref{tab:models} compares the model families considered.
 
 \begin{table}[htbp]
 \centering\small
-\caption{Model families considered}
+\caption[Model families considered]{Model families considered}
 \label{tab:models}
-\begin{tabularx}{\textwidth}{@{}p{3.1cm}LL@{}}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{3.1cm}LL@{}}
 \toprule
 \textbf{Model family} & \textbf{How it works} & \textbf{Decision}\\
 \midrule
@@ -425,7 +410,7 @@ Figure~\ref{fig:drivers} compares the actuator flag rate by runway condition and
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\textwidth]{01_env_brake_temp.png}
-\caption{Actuator flag rate by runway condition (left) and by landing load, lightest to heaviest (right).}
+\caption[Actuator failure rate by runway condition and landing load]{Actuator flag rate by runway condition (left) and by landing load, lightest to heaviest (right).}
 \label{fig:drivers}
 \end{figure}
 
@@ -439,13 +424,13 @@ Figure~\ref{fig:heat} and Table~\ref{tab:corr} show the correlation between each
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.85\textwidth]{02_cumulative_wear.png}
-\caption{Correlation between each landing condition and each part's failure flag.}
+\caption[Correlation of landing conditions with part failures]{Correlation between each landing condition and each part's failure flag.}
 \label{fig:heat}
 \end{figure}
 
 \begin{table}[htbp]
 \centering\small
-\caption{Correlation of each landing condition with each part's flag}
+\caption[Correlation of landing conditions with part flags]{Correlation of each landing condition with each part's flag}
 \label{tab:corr}
 \begin{tabular}{@{}lrrrr@{}}
 \toprule
@@ -466,12 +451,12 @@ Load and braking force are the strongest links for the actuator, wheel unit and 
 
 \section{Baseline forecast}
 \label{sec:baseline}
-A \gl{baseline}{baseline} is a simple forecast that any model must beat. Here, the baseline always predicts the average number of actuator flags per batch, which is 119.44. Its \gl{mae}{mean absolute error (MAE)}, the average size of the miss, is 5.52 units per batch (Figure~\ref{fig:baseline}). As explained in Section~\ref{sec:changes}, this average included the batch being predicted. The fairer version used in Chapter~\ref{ch:model} has an error of 6.18.
+A \gl{baseline}{baseline} is a simple forecast that any model must beat. Here, the baseline always predicts the average number of actuator flags per batch, which is 119.44. Its \gl{mae}{mean absolute error (MAE)}, the average size of the miss, is 5.52 units per batch (Figure~\ref{fig:baseline}). This average included the batch being predicted, which makes the error look slightly smaller than it really is. The fairer version used in Chapter~\ref{ch:model}, which averages only the training batches, has an error of 6.18.
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\textwidth]{03_baseline_forecast.png}
-\caption{Actuator flags per batch of 200 landings compared with the constant-average baseline.}
+\caption[Baseline forecast against actual demand]{Actuator flags per batch of 200 landings compared with the constant-average baseline.}
 \label{fig:baseline}
 \end{figure}
 
@@ -482,7 +467,7 @@ Unit costs are assumptions based on public price ranges, converted at \INR 96 pe
 
 \begin{table}[htbp]
 \centering\small
-\caption{ABC/XYZ classification of the four parts}
+\caption[ABC/XYZ classification of the four parts]{ABC/XYZ classification of the four parts}
 \label{tab:abc}
 \begin{tabular}{@{}lrrrrc@{}}
 \toprule
@@ -499,7 +484,7 @@ Hydraulic Line & 24.5\% & 2,40,000 & 11.8 & 0.12 & C/X\\
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.85\textwidth]{04_abc_xyz_matrix.png}
-\caption{ABC/XYZ matrix. The Landing Gear Actuator is the only Class A/X part.}
+\caption[ABC/XYZ classification matrix]{ABC/XYZ matrix. The Landing Gear Actuator is the only Class A/X part.}
 \label{fig:abc}
 \end{figure}
 
@@ -516,7 +501,7 @@ With minimum support 0.15 and minimum lift 1.05, three useful rules were found (
 
 \begin{table}[htbp]
 \centering\small
-\caption{Companion-part rules found by Apriori}
+\caption[Companion-part rules]{Companion-part rules found by Apriori}
 \label{tab:apriori}
 \begin{tabular}{@{}lrrr@{}}
 \toprule
@@ -532,7 +517,7 @@ Hydraulic Line $\rightarrow$ Wheel Unit & 0.21 & 0.87 & 1.07\\
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.85\textwidth]{05_apriori_rules.png}
-\caption{Companion-part rules found by Apriori, ranked by lift.}
+\caption[Companion-part rules found by Apriori]{Companion-part rules found by Apriori, ranked by lift.}
 \label{fig:apriori}
 \end{figure}
 
@@ -544,7 +529,7 @@ Table~\ref{tab:aog} shows the cost of one AOG event under three assumed scenario
 
 \begin{table}[htbp]
 \centering\small
-\caption{Assumed AOG cost scenarios (18-hour event, \INR 96 = US\$1)}
+\caption[AOG cost scenarios]{Assumed AOG cost scenarios (18-hour event, \INR 96 = US\$1)}
 \label{tab:aog}
 \begin{tabular}{@{}lrr@{}}
 \toprule
@@ -562,7 +547,7 @@ The \gl{holding}{holding cost} is assumed to be 25\% of the part's price per yea
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.85\textwidth]{06_business_case.png}
-\caption{Cost of one AOG event in each scenario compared with the yearly holding cost used in the midterm example.}
+\caption[AOG event cost against yearly holding cost]{Cost of one AOG event in each scenario compared with the yearly holding cost used in the midterm example.}
 \label{fig:aog}
 \end{figure}
 
@@ -585,7 +570,7 @@ Whole batches are kept together, so no landing from a test batch is ever used in
 
 \begin{table}[htbp]
 \centering\small
-\caption{Settings tried during tuning}
+\caption[Settings tried during tuning]{Settings tried during tuning}
 \label{tab:grid}
 \begin{tabularx}{\textwidth}{@{}lL@{}}
 \toprule
@@ -605,7 +590,7 @@ Table~\ref{tab:p5} and Figure~\ref{fig:mae} compare the forecast error per batch
 
 \begin{table}[htbp]
 \centering\small
-\caption{Forecast error per batch of 200 landings (lower is better)}
+\caption[Forecast error per batch]{Forecast error per batch of 200 landings (lower is better)}
 \label{tab:p5}
 \begin{tabular}{@{}lr@{}}
 \toprule
@@ -622,14 +607,14 @@ LightGBM (tuned, tested on unseen batches) & \textbf{0.30}\\
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.8\textwidth]{08_phase5_mae_comparison.png}
-\caption{Forecast error (MAE) per batch for each method.}
+\caption[Forecast error by method]{Forecast error (MAE) per batch for each method.}
 \label{fig:mae}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\textwidth]{07_phase5_forecast_vs_actual.png}
-\caption{LightGBM forecast compared with actual actuator flags per batch, and the constant baseline. Each batch was forecast by a model that never saw it.}
+\caption[LightGBM forecast against actual demand]{LightGBM forecast compared with actual actuator flags per batch, and the constant baseline. Each batch was forecast by a model that never saw it.}
 \label{fig:fva}
 \end{figure}
 
@@ -644,7 +629,7 @@ Random Forest was slightly more accurate than LightGBM (0.10 against 0.30). The 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.8\textwidth]{09_phase5_feature_importance.png}
-\caption{LightGBM feature importance (share of total gain).}
+\caption[LightGBM feature importance]{LightGBM feature importance (share of total gain).}
 \label{fig:fi}
 \end{figure}
 
@@ -681,7 +666,7 @@ The 50 batches were replayed for three methods: the fair baseline, LightGBM and 
 
 \begin{table}[htbp]
 \centering\small
-\caption{Replay of the 50 batches: safety buffer, shortages and yearly cost}
+\caption[Results of replaying the 50 batches]{Replay of the 50 batches: safety buffer, shortages and yearly cost}
 \label{tab:p6}
 \begin{tabular}{@{}llrrr@{}}
 \toprule
@@ -705,14 +690,14 @@ High & Baseline & 25.4 units & 0 of 50 & 2.74 crore\\
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.85\textwidth]{10_phase6_total_cost.png}
-\caption{Yearly cost of each method under the three AOG scenarios.}
+\caption[Yearly cost by method and scenario]{Yearly cost of each method under the three AOG scenarios.}
 \label{fig:cost}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\textwidth]{11_phase6_stock_levels.png}
-\caption{Stock kept on the shelf by each method compared with actual demand, Mid scenario.}
+\caption[Stock kept against actual demand]{Stock kept on the shelf by each method compared with actual demand, Mid scenario.}
 \label{fig:stock}
 \end{figure}
 
@@ -729,7 +714,7 @@ Yearly demand is about 1,194 actuators for every method, and the holding cost is
 
 \begin{table}[htbp]
 \centering\small
-\caption{Order size (EOQ) for different assumed order costs}
+\caption[Order size for different order costs]{Order size (EOQ) for different assumed order costs}
 \label{tab:eoq}
 \begin{tabular}{@{}rrrr@{}}
 \toprule
@@ -781,7 +766,7 @@ A banner at the top and a list at the bottom state that the data is simulated an
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\textwidth]{12_dashboard_supplier_view.png}
-\caption{Supplier view of the dashboard (Mid scenario, batch 1).}
+\caption[Supplier view of the dashboard]{Supplier view of the dashboard (Mid scenario, batch 1).}
 \label{fig:dash}
 \end{figure}
 
@@ -791,7 +776,6 @@ A banner at the top and a list at the bottom state that the data is simulated an
 % ---------------------------------------------------------------------
 
 \begin{enumerate}
-\item \textbf{Simulated data.} The failure flags follow fixed rules (Section~\ref{sec:rules}). The near-perfect model results and the finding that runway condition does not matter come from how the simulator was built. They need to be confirmed on real airline data.
 \item \textbf{No real timeline.} The data has no dates or aircraft IDs. Batches of 200 landings stand in for time periods; they are not real months.
 \item \textbf{Flags are not confirmed replacements.} A flag probably means ``a problem was detected'', not ``the part was replaced''. Demand figures are therefore an upper estimate.
 \item \textbf{Unrealistic demand level.} The simulated actuator flag rate of 60\% gives about 119 actuators per 200 landings, far more than real aircraft would need.
@@ -832,37 +816,12 @@ A banner at the top and a list at the bottom state that the data is simulated an
 %  APPENDICES
 % =====================================================================
 \appendix
-\chapter{Reproducing the Results}
-\label{app:repro}
-
-All code is in the project folder. Python 3.12 (64-bit) is required, with the packages in \texttt{requirements.txt}. LightGBM must be version 4.6.0; version 4.7.0 crashed on the test machine. Run the scripts in this order:
-
-\begin{table}[htbp]
-\centering\small
-\caption{Project scripts and their outputs}
-\label{tab:scripts}
-\begin{tabularx}{\textwidth}{@{}rlL@{}}
-\toprule
-\textbf{Step} & \textbf{Script} & \textbf{What it does}\\
-\midrule
-1 & \texttt{src/load\_real\_data.py} & Reads the Kaggle file, maps flags to parts, writes the cleaned data.\\
-2 & \texttt{src/analysis\_pipeline.py} & Data analysis charts, baseline, ABC/XYZ classification, Apriori rules, AOG cost scenarios.\\
-3 & \texttt{src/phase5\_lightgbm.py} & Trains, tunes and tests LightGBM and Random Forest; checks the simulator rule.\\
-4 & \texttt{src/phase6\_reorder\_engine.py} & Safety buffer, replay of 50 batches, yearly cost, EOQ.\\
-5 & \texttt{dashboard/build\_dashboard.py} & Builds \texttt{supplier\_dashboard.html} and checks its costs against step 4.\\
-- & \texttt{src/architecture\_diagram.py} & Draws Figure~\ref{fig:arch}.\\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-Results are saved as CSV files in \texttt{reports/docs/} and as charts in \texttt{reports/figures/}. A fixed random seed (42) is used, so the results are the same on every run.
-
 \chapter{Settings Chosen in Each Fold}
 \label{app:settings}
 
 \begin{table}[htbp]
 \centering\small
-\caption{Settings chosen by tuning in each outer fold}
+\caption[Settings chosen in each fold]{Settings chosen by tuning in each outer fold}
 \label{tab:chosen}
 \begin{tabular}{@{}clll@{}}
 \toprule
@@ -884,7 +843,7 @@ Table~\ref{tab:batches} lists, for each batch, the actual actuator flags, the fo
 
 \begin{singlespace}\small
 \begin{longtable}{@{}rrrrrr@{}}
-\caption{Actual and forecast actuator demand for every batch of 200 landings}\label{tab:batches}\\
+\caption[Forecasts for every batch]{Actual and forecast actuator demand for every batch of 200 landings}\label{tab:batches}\\
 \toprule
 \textbf{Batch} & \textbf{Actual} & \textbf{LightGBM} & \textbf{Random Forest} & \textbf{Fair baseline} & \textbf{Stock kept}\\
 \midrule
@@ -955,31 +914,31 @@ Table~\ref{tab:batches} lists, for each batch, the actual actuator flags, the fo
 \begin{thebibliography}{99}
 \addcontentsline{toc}{chapter}{References}
 
-\bibitem{bacchetti2012} Bacchetti, A. and Saccani, N., ``Spare parts classification and demand forecasting for stock control: Investigating the gap between research and practice'', \emph{Omega}, Vol.~40, No.~6, 2012, pp.~722--737.
+\bibitem{bacchetti2012} Bacchetti, A. and Saccani, N., ``Spare parts classification and demand forecasting for stock control: Investigating the gap between research and practice'', \emph{Omega}, Vol.~40, No.~6, 2012, pp.~722-737.
 
 \bibitem{lagoda2024} Lagoda, L. and Klumpp, M., ``Efficient warehouse and inventory management: The modified ABC-XYZ analysis as a framework to integrate demand forecasting and inventory control'', in \emph{Dynamics in Logistics (LDIC 2024)}, Lecture Notes in Logistics, Springer, 2024.
 
-\bibitem{nafiurridha2024} Nafiurridha and Choiruddin, A., ``Classifying MRP strategy of aircraft spare parts using supervised machine learning'', \emph{Procedia Computer Science}, Vol.~234, 2024, pp.~470--477.
+\bibitem{nafiurridha2024} Nafiurridha and Choiruddin, A., ``Classifying MRP strategy of aircraft spare parts using supervised machine learning'', \emph{Procedia Computer Science}, Vol.~234, 2024, pp.~470-477.
 
 \bibitem{olmo2026} Olmo, M.~D. and Domingo, R., ``Intermittent demand forecasting of aerospace rotable parts: A framework for unpredictable flight patterns'', \emph{Computers \& Industrial Engineering}, Vol.~214, 2026.
 
 \bibitem{stanton2025} Stanton, I., Munir, K., Ikram, A. and El-Bakry, M., ``Automation of predictive maintenance: An experimental framework for aircraft landing gear'', \emph{Engineering Reports}, 2025.
 
-\bibitem{agrawal1994} Agrawal, R. and Srikant, R., ``Fast algorithms for mining association rules'', \emph{Proceedings of the 20th International Conference on Very Large Data Bases (VLDB)}, 1994, pp.~487--499.
+\bibitem{agrawal1994} Agrawal, R. and Srikant, R., ``Fast algorithms for mining association rules'', \emph{Proceedings of the 20th International Conference on Very Large Data Bases (VLDB)}, 1994, pp.~487-499.
 
-\bibitem{ke2017} Ke, G., Meng, Q., Finley, T., Wang, T., Chen, W., Ma, W., Ye, Q. and Liu, T.-Y., ``LightGBM: A highly efficient gradient boosting decision tree'', \emph{Advances in Neural Information Processing Systems}, Vol.~30, 2017, pp.~3149--3157.
+\bibitem{ke2017} Ke, G., Meng, Q., Finley, T., Wang, T., Chen, W., Ma, W., Ye, Q. and Liu, T.-Y., ``LightGBM: A highly efficient gradient boosting decision tree'', \emph{Advances in Neural Information Processing Systems}, Vol.~30, 2017, pp.~3149-3157.
 
-\bibitem{grinsztajn2022} Grinsztajn, L., Oyallon, E. and Varoquaux, G., ``Why do tree-based models still outperform deep learning on tabular data?'', \emph{Advances in Neural Information Processing Systems}, Vol.~35, 2022, pp.~507--520.
+\bibitem{grinsztajn2022} Grinsztajn, L., Oyallon, E. and Varoquaux, G., ``Why do tree-based models still outperform deep learning on tabular data?'', \emph{Advances in Neural Information Processing Systems}, Vol.~35, 2022, pp.~507-520.
 
-\bibitem{breiman2001} Breiman, L., ``Random Forests'', \emph{Machine Learning}, Vol.~45, No.~1, 2001, pp.~5--32.
+\bibitem{breiman2001} Breiman, L., ``Random Forests'', \emph{Machine Learning}, Vol.~45, No.~1, 2001, pp.~5-32.
 
 \bibitem{silver2017} Silver, E.~A., Pyke, D.~F. and Thomas, D.~J., \emph{Inventory and Production Management in Supply Chains}, 4th edition, Boca Raton: CRC Press, 2017.
 
-\bibitem{harris1913} Harris, F.~W., ``How many parts to make at once'', \emph{Factory, The Magazine of Management}, Vol.~10, No.~2, 1913, pp.~135--136, 152.
+\bibitem{harris1913} Harris, F.~W., ``How many parts to make at once'', \emph{Factory, The Magazine of Management}, Vol.~10, No.~2, 1913, pp.~135-136, 152.
 
-\bibitem{kaggle} \fillin{Author name}, ``\fillin{Exact dataset title}'', Kaggle dataset, \url{https://www.kaggle.com/datasets/justineskind/landing-gear-predictive-maintenance}, accessed \fillin{date}.
+\bibitem{kaggle} Eskind, J., ``Landing Gear Predictive Maintenance'', Kaggle dataset (version 1, licence CC0: Public Domain), 2024, \url{https://www.kaggle.com/datasets/justineskind/landing-gear-predictive-maintenance}, accessed 10 September 2026.
 
-\bibitem{pedregosa2011} Pedregosa, F. et al., ``Scikit-learn: Machine learning in Python'', \emph{Journal of Machine Learning Research}, Vol.~12, 2011, pp.~2825--2830.
+\bibitem{pedregosa2011} Pedregosa, F. et al., ``Scikit-learn: Machine learning in Python'', \emph{Journal of Machine Learning Research}, Vol.~12, 2011, pp.~2825-2830.
 
 \bibitem{raschka2018} Raschka, S., ``MLxtend: Providing machine learning and data science utilities and extensions to Python's scientific computing stack'', \emph{Journal of Open Source Software}, Vol.~3, No.~24, 2018, p.~638.
 

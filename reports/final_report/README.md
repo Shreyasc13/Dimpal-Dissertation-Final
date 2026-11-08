@@ -14,21 +14,16 @@ references numbered in citation order, and a glossary with page numbers.
    The table of contents and glossary page numbers fill in automatically.
 4. Download the PDF. It must be **10 MB or less** (it should be about 2 MB).
 
-## Things you must fill in
+## Placeholders
 
-Everything you still need to fill in shows in the PDF as **red text on yellow**.
-In `main.tex`, search for `\fillin`. There are 13:
+All placeholders are filled in (as of 8 Nov 2026). If you ever need a new
+one, write `\fillin{what is missing}`. It shows in the PDF as **red text on
+yellow**, so it can't be missed.
 
-| Where | What to fill in |
-|---|---|
-| Top of file (`\SubmitMonth`) | Month and year of submission. This appears on the cover and title page. |
-| Cover | Station name and centre |
-| Acknowledgements | Head of the organisation (name and designation) |
-| Acknowledgements | Professional expert / in-charge of the project (or delete the line) |
-| Acknowledgements and abstract sheet | Faculty mentor's name (2 places) |
-| Abstract sheet | Duration, date of start, date of submission |
-| Abstract sheet | Designations of Saurabh Mahajan and Karthik Mahadevan |
-| References [12] | Kaggle dataset author, exact title, and the date you downloaded it |
+## Making the PDF on this laptop
+
+MiKTeX is installed. In this folder, run `pdflatex main.tex` twice
+(twice so the contents and page numbers update). That produces `main.pdf`.
 
 ## Before you submit
 

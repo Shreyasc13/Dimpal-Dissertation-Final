@@ -7,3 +7,11 @@ data/raw/*
 data/processed/*
 .DS_Store
 ~$*
+
+# LaTeX build files
+reports/final_report/*.aux
+reports/final_report/*.log
+reports/final_report/*.out
+reports/final_report/*.toc
+reports/final_report/*.lof
+reports/final_report/*.lot
