@@ -61,7 +61,7 @@ Scale note: forecast demand is ~119 actuators per 200 landings (because the simu
 | ₹1,00,000 | 15 | 80 | 8 |
 | ₹2,00,000 | 21 | 57 | 6 |
 Outputs: `reports/docs/phase6_*.csv` (incl. `phase6_order_size_eoq.csv`), `reports/figures/10_phase6_total_cost.png`, `11_phase6_stock_levels.png`.
-**Status: Phases 5, 6 and 7-dashboard DONE (2026-11-08). Remaining: final dissertation report** (apply the wording fixes listed in this file, add the Limitations paragraph, and write up Phases 5–7).
+**Status: Phases 5, 6 and 7-dashboard DONE (2026-11-08). Final report FIRST DRAFT written (2026-11-08)** as LaTeX at `reports/final_report/main.tex`, following the BITS WILP report guidelines (user was asked to write it in LaTeX). It has 10 chapters plus appendices A–C, references and a glossary with page refs. Upload `final_report_overleaf.zip` to Overleaf (pdfLaTeX). It has **not been compiled yet**: there's no LaTeX on this machine, and downloading Tectonic was blocked by the permission check. It has 13 `\fillin{}` placeholders (listed in its README): faculty mentor, head of org, designations, dates, station/centre, Kaggle author/title. Uses "Rs." via `\INR` macro. The midterm wording fixes are applied in it (simulated, Prophet/LSTM, softened "far better", A/X, heatmap caption).
 
 ### ▶ RESUME HERE (session paused 2026-11-08 evening — now superseded by Phase 5/6 sections above)
 - **Dataset:** downloaded again and placed at `data/raw/landing_gear/landing_gear_maintenance_simulated_data.xlsx`. Checked on 2026-11-08: 10,000×12, no missing values. Failure rates, runway rates, per-runway correlations (0.814/0.823/0.827) and baseline (mean 119.44, MAE 5.52) all match the report exactly.
@@ -87,7 +87,7 @@ Outputs: `reports/docs/phase6_*.csv` (incl. `phase6_order_size_eoq.csv`), `repor
 - `reports/2024_MT_13052_Midterm_Dissertation.docx` — the user's manually-renamed/edited copy of the report has some content that looks accidentally deleted (Limitations section, Scope section, some Implementation Details table rows, the Apriori chart/Figure 6, broken grammar from stripped em-dashes) mixed with genuine intentional edits (reformatted cover, signature block moved, List of Figures/Tables removed). User was asked whether to restore the missing parts and never answered — **do not silently "fix" this file; ask first.**
 - Exact Kaggle dataset citation (title/author/listing link) — still unresolved, report has `[Dataset citation pending]`.
 - Real fleet-utilisation figure — business case currently assumes 2,000 landings/year, flagged as a placeholder throughout.
-- Git repo has **no remote configured** (`git remote -v` is empty) — if the user wants to push, a GitHub remote needs to be set up first.
+- Git remote: `origin` = https://github.com/Shreyasc13/Dimpal-Dissertation-Final.git (branch `master`).
 
 ## The dataset — ground truth, verified against actual files
 
@@ -164,7 +164,7 @@ These don't sum to 100% because each landing gets 4 independent yes/no checks �
 - `reports/Midterm_Report_DemandForecasting_DimpalShetty.docx` — canonical generated report (15 sections, Abstract + ToC, built via a Node.js `docx`-package script).
 - `reports/2024_MT_13052_Midterm_Dissertation.docx` — user's manually-edited renamed copy. **See "Open items" above — has unresolved content gaps, do not edit without asking.**
 - `reports/Midterm_Viva_DimpalShetty.pptx` — 16-slide viva deck with speaker notes baked into each slide's Notes pane, built with python-pptx (matches the Claude Artifact deck's content/design). Ready to upload to Google Drive → "Open with Google Slides" for a native editable copy.
-- `dashboard/` — Phase 7 supplier dashboard. `build_dashboard.py` reads the Phase 5/6 CSVs, re-checks yearly costs against Phase 6 (assert), and injects the data into `dashboard_template.html`, writing **`supplier_dashboard.html`**: a single offline file (no CDN, works in a viva without internet). Controls: AOG scenario, forecast method, order cost, batch slider. Tiles: forecast, stock to keep, safety buffer, EOQ order plan, actual outcome, yearly cost. Also has a stock-vs-demand line chart (hover + table view), a yearly-cost bar chart, optional Apriori bundling panel, and an assumptions list. Light/dark mode. Rebuild order: load_real_data → phase5 → phase6 → build_dashboard.
+- `dashboard/` — Phase 7 supplier dashboard. `build_dashboard.py` reads the Phase 5/6 CSVs, re-checks yearly costs against Phase 6 (assert), and injects the data into `dashboard_template.html`, writing **`supplier_dashboard.html`**: a single offline file (no CDN, works in a viva without internet). **Layout (changed 2026-11-08 at user's request: suppliers shouldn't pick models):** Section 1 "Supplier view" always uses LightGBM, with no model dropdown. Controls: batch slider, AOG scenario, order cost. Tiles: forecast, stock to keep, safety buffer, EOQ order plan, actual outcome, "ship together" (Actuator→Wheel Unit 95%). It also has a stock-vs-demand line chart, the Apriori bundling panel, and a "What the words mean" glossary. Section 2 "For evaluation (viva/report only)" has a method comparison table (MAE 0.30 / 0.10 / fair baseline 6.18, buffer, shortages, yearly cost) and the yearly-cost bar chart. Then the assumptions list. Light/dark mode. Rebuild order: load_real_data → phase5 → phase6 → build_dashboard.
 - `src/phase5_lightgbm.py`, `src/phase6_reorder_engine.py` — see Phase 5/6 sections above. Python env: `.venv` (Python 3.12 64-bit), `requirements.txt`.
 
 ## Literature referenced (all verified as real papers)
@@ -186,4 +186,4 @@ No time sequence in the data (no dates/aircraft IDs) rules out ARIMA/Prophet/LST
 
 ## Git state
 
-No remote is configured yet (`git remote -v` returns empty). Local commits exist on `master`. If the user wants to push this project, a GitHub remote needs to be added first — ask before assuming which repo/account to use.
+Remote `origin` = https://github.com/Shreyasc13/Dimpal-Dissertation-Final.git, branch `master`. Note: someone once committed the whole `.venv` folder by accident and then reverted it (commits d6cbc65/e173f7e), so keep `.venv` out of commits.
