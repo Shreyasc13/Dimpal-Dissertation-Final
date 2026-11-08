@@ -1,5 +1,8 @@
 """
-Phase 7 - builds the Supplier Dashboard as ONE self-contained HTML file:
+Phase 7 - builds the Supplier Dashboard as ONE self-contained HTML file.
+Top part = supplier view (LightGBM only, no model choice).
+Bottom part = "For evaluation" comparison of LightGBM vs Random Forest vs baseline.
+Output:
     dashboard/supplier_dashboard.html
 Double-click it to open in any browser. No internet or installs needed.
 
@@ -30,6 +33,17 @@ aog["name"] = aog["scenario"].str.split(r"\s", regex=True).str[0]
 policy = pd.read_csv(DOCS / "phase6_policy_comparison.csv")
 eoq = pd.read_csv(DOCS / "phase6_order_size_eoq.csv")
 rules = pd.read_csv(DOCS / "apriori_rules.csv")
+p5 = pd.read_csv(DOCS / "phase5_results.csv")
+
+
+def mae_for(prefix):
+    return float(p5[p5["method"].str.startswith(prefix)]["batch_MAE"].iloc[0])
+
+
+# Forecast error per method. The baseline used in Phase 6 is the FAIR one (training batches only).
+MAE = {"LightGBM": mae_for("LightGBM"), "Random Forest": mae_for("Random Forest"),
+       "Constant baseline": mae_for("Fair baseline")}
+MIDTERM_MAE = mae_for("Original baseline")
 
 
 def sigma_other_folds(col):
@@ -71,6 +85,8 @@ data = {
                 "annual_demand_units"]].to_dict("records"),
     "rules": rules[rules["confidence"] >= 0.7].sort_values("lift", ascending=False).to_dict("records"),
     "hold_per_unit_period": HOLD_PER_UNIT_PERIOD,
+    "mae": MAE,
+    "midterm_mae": MIDTERM_MAE,
 }
 
 html = (Path(__file__).resolve().parent / "dashboard_template.html").read_text(encoding="utf-8")

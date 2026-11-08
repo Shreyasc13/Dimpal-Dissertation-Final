@@ -50,7 +50,7 @@ input[type=range] { padding: 0; min-width: 220px; accent-color: var(--s-lgb); }
 .tile .v { font-size: 28px; font-weight: 650; margin: 2px 0; font-variant-numeric: tabular-nums; }
 .tile .n { font-size: 13px; color: var(--muted); }
 .good { color: var(--good); } .bad { color: var(--bad); }
-.grid2 { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 16px; }
+.grid2 { display: grid; grid-template-columns: 1.2fr 1fr; gap: 16px; margin-bottom: 16px; }
 @media (max-width: 860px) { .grid2 { grid-template-columns: 1fr; } }
 .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; position: relative; min-width: 0; }
 .card h2 { font-size: 16px; margin: 0 0 2px; }
@@ -74,6 +74,8 @@ details summary span { font-weight: 400; color: var(--text-2); font-size: 13px; 
 ul.assume { margin: 8px 0 0; padding-left: 20px; color: var(--text-2); font-size: 14px; }
 ul.assume li { margin: 4px 0; }
 .rule { padding: 10px 0; border-bottom: 1px solid var(--border); }
+.section { font-size: 19px; margin: 8px 0 2px; }
+.tag { font-size: 12px; font-weight: 500; color: var(--text-2); background: var(--warn-bg); border: 1px solid var(--warn-border); border-radius: 999px; padding: 2px 8px; margin-left: 6px; vertical-align: middle; }
 .rule:last-child { border-bottom: none; }
 </style>
 </head>
@@ -83,28 +85,63 @@ ul.assume li { margin: 4px 0; }
   <p class="sub">How many actuators to keep on the shelf for each batch of 200 landings, and what it costs. Dimpal Shetty · 2024MT13052 · BITS Pilani</p>
   <div class="banner"><b>Please note:</b> this dashboard is built on a <b>simulated</b> public dataset (Kaggle). Unit cost, fleet utilisation, AOG costs and order cost are <b>assumptions</b>, listed at the bottom. It demonstrates the method; real airline data is needed to confirm the numbers.</div>
 
+  <h2 class="section">1 · Supplier view</h2>
+  <p class="sub">What to have ready for the next batch of landings. Forecasts come from the LightGBM model.</p>
+
   <div class="controls">
-    <label>Grounding (AOG) cost scenario
-      <select id="scen"></select></label>
-    <label>Forecast method
-      <select id="meth"></select></label>
-    <label>Cost of placing one order (assumed)
-      <select id="ocost"></select></label>
     <label><span>Planning batch: <b id="bLabel"></b></span>
       <input type="range" id="batch" min="0" max="49" value="0"></label>
+    <label>How costly is a grounding? (sets how safe to be)
+      <select id="scen"></select></label>
+    <label>Cost of placing one order (assumed)
+      <select id="ocost"></select></label>
   </div>
 
   <div class="tiles" id="tiles"></div>
 
+  <div class="card" id="lineCard" style="margin-bottom:16px">
+    <h2>Stock kept on the shelf vs. actual demand</h2>
+    <p class="cap">Each point is one batch of 200 landings (about 36 days), forecast by a model that never saw that batch. Hover for details; click to select a batch.</p>
+    <div class="legend" id="lineLegend"></div>
+    <svg id="line" viewBox="0 0 720 300" role="img" aria-label="Line chart of actual demand and stock kept per batch"></svg>
+    <button class="link" id="tblBtn">Show as table</button>
+    <div class="tablewrap" id="tblWrap" hidden></div>
+    <div class="tip" id="tip"></div>
+  </div>
+
+  <div class="card" style="margin-bottom:16px">
+    <details open>
+      <summary>Ship together: parts that usually fail together <span>(from Apriori companion-part mining)</span></summary>
+      <div id="rules" style="margin-top:8px"></div>
+    </details>
+  </div>
+
+  <div class="card" style="margin-bottom:28px">
+    <details>
+      <summary>What the words mean</summary>
+      <ul class="assume">
+        <li><b>Batch:</b> a block of 200 landings, about 36 days. The data has no dates, so this stands in for a planning period.</li>
+        <li><b>Forecast demand:</b> how many actuators we expect to be needed in the batch.</li>
+        <li><b>Safety buffer:</b> extra units on top of the forecast, in case the forecast is a little low.</li>
+        <li><b>Stock to keep:</b> forecast + safety buffer, the number to have on the shelf when the batch starts.</li>
+        <li><b>AOG (Aircraft On Ground) / grounding:</b> a plane can't fly because a part isn't available. Very expensive.</li>
+        <li><b>Holding cost:</b> the cost of a part sitting on the shelf (money tied up, storage, insurance).</li>
+        <li><b>Order cost:</b> the cost of placing one order (paperwork, transport, inspection).</li>
+        <li><b>EOQ (order size):</b> the number of units per order that balances order cost against holding cost.</li>
+        <li><b>In-stock target:</b> how often we aim to have enough stock. It's set high because a grounding costs so much more than a spare part.</li>
+      </ul>
+    </details>
+  </div>
+
+  <h2 class="section">2 · For evaluation <span class="tag">viva / report only, not shown to suppliers</span></h2>
+  <p class="sub">Why the LightGBM forecast is worth using: the same protection with a much smaller safety buffer. Compared on the same 50 batches.</p>
+
   <div class="grid2">
-    <div class="card" id="lineCard">
-      <h2>Stock kept on the shelf vs. actual demand</h2>
-      <p class="cap">Each point is one batch of 200 landings, forecast by a model that never saw that batch. Hover for details; click to select a batch.</p>
-      <div class="legend" id="lineLegend"></div>
-      <svg id="line" viewBox="0 0 720 300" role="img" aria-label="Line chart of actual demand and stock kept per batch"></svg>
-      <button class="link" id="tblBtn">Show as table</button>
-      <div class="tablewrap" id="tblWrap" hidden></div>
-      <div class="tip" id="tip"></div>
+    <div class="card">
+      <h2>Method comparison</h2>
+      <p class="cap" id="cmpCap"></p>
+      <div class="tablewrap" style="max-height:none" id="cmpTable"></div>
+      <p class="cap" id="maeNote" style="margin-top:10px"></p>
     </div>
     <div class="card" id="barCard">
       <h2>Yearly cost by method</h2>
@@ -113,13 +150,6 @@ ul.assume li { margin: 4px 0; }
       <p class="cap" id="saving" style="margin-top:8px"></p>
       <div class="tip" id="tip2"></div>
     </div>
-  </div>
-
-  <div class="card" style="margin-bottom:16px">
-    <details>
-      <summary>Bundling suggestions: parts that usually fail together <span>(optional, from Apriori companion-part mining)</span></summary>
-      <div id="rules" style="margin-top:8px"></div>
-    </details>
   </div>
 
   <div class="card">
@@ -142,7 +172,8 @@ const D = /*__DATA__*/null;
 const COLORS = { "LightGBM": "var(--s-lgb)", "Random Forest": "var(--s-rf)", "Constant baseline": "var(--s-base)" };
 const METHODS = ["LightGBM", "Random Forest", "Constant baseline"];
 const $ = id => document.getElementById(id);
-const S = { scen: "Mid", meth: "LightGBM", ocost: 50000, batch: 0 };
+const SUPPLIER_METHOD = "LightGBM";  // the one forecast suppliers see
+const S = { scen: "Mid", meth: SUPPLIER_METHOD, ocost: 50000, batch: 0 };
 
 function inr(v) {
   if (v >= 1e7) return "₹" + (v / 1e7).toFixed(2) + " cr";
@@ -157,12 +188,10 @@ function eoqRow(m, oc) { return D.eoq.find(r => r.method === m && r.order_cost_i
 
 // ---------- controls ----------
 const scenNames = Object.keys(D.scenarios);
-opt($("scen"), scenNames, scenNames.map(s => `${s}: ${inr(D.scenarios[s].aog_per_hr)}/hr → ${inr(D.scenarios[s].per_event)} per event`), S.scen);
-opt($("meth"), METHODS, METHODS, S.meth);
+opt($("scen"), scenNames, scenNames.map(s => `${s}: ${inr(D.scenarios[s].aog_per_hr)}/hr → ${inr(D.scenarios[s].per_event)} per grounding`), S.scen);
 const ocs = [...new Set(D.eoq.map(r => r.order_cost_inr))];
 opt($("ocost"), ocs, ocs.map(v => inr(v) + (v === 50000 ? " (main assumption)" : "")), S.ocost);
 $("scen").onchange = e => { S.scen = e.target.value; render(); };
-$("meth").onchange = e => { S.meth = e.target.value; render(); };
 $("ocost").onchange = e => { S.ocost = +e.target.value; render(); };
 $("batch").oninput = e => { S.batch = +e.target.value; render(); };
 
@@ -171,15 +200,15 @@ function renderTiles() {
   const b = S.batch, f = D.forecast[S.meth][b], t = D.target[S.scen][S.meth][b], a = D.actual[b];
   const buf = t - f, e = eoqRow(S.meth, S.ocost), sc = D.scenarios[S.scen];
   const ok = a <= t;
-  const c = cost(S.scen, S.meth), cb = cost(S.scen, "Constant baseline");
+  const bundle = D.rules.filter(r => r.antecedents === "Landing Gear Actuator").sort((p, q) => q.confidence - p.confidence)[0];
   const tiles = [
-    ["Forecast demand", f.toFixed(1), "actuators needed in this batch"],
+    ["Forecast demand", f.toFixed(1), "actuators expected to be needed in this batch"],
     ["Stock to keep", t, `forecast + safety buffer (aim: in stock ${(sc.service * 100).toFixed(2)}% of the time)`],
     ["Safety buffer", "+" + buf.toFixed(1), "extra units kept \"just in case\""],
     ["Order plan", `${e.eoq_units} units`, `per order (EOQ), about ${e.orders_per_batch.toFixed(1)} orders per batch`],
     ["What actually happened", a, ok ? `<span class="good">✓ Enough stock: ${t - a} spare</span>` : `<span class="bad">⚠ Short by ${a - t}: grounding risk</span>`],
-    ["Yearly cost, this method", inr(c.total_cost_inr_per_year),
-      S.meth === "Constant baseline" ? "no forecast model" : `vs ${inr(cb.total_cost_inr_per_year)} without a model`],
+    bundle ? ["Ship together", bundle.consequents, `fails alongside the actuator ${Math.round(bundle.confidence * 100)}% of the time`]
+           : ["Ship together", "None", "no strong companion part"],
   ];
   $("tiles").innerHTML = tiles.map(([k, v, n]) => `<div class="tile"><div class="k">${k}</div><div class="v">${v}</div><div class="n">${n}</div></div>`).join("");
   $("bLabel").textContent = `${b + 1} of 50`;
@@ -190,9 +219,7 @@ function renderTiles() {
 const W = 720, H = 300, M = { l: 44, r: 12, t: 10, b: 30 };
 function series() {
   const out = [{ name: "Actual demand", color: "var(--text)", vals: D.actual, dots: true }];
-  out.push({ name: `Stock kept: ${S.meth}`, color: COLORS[S.meth], vals: D.target[S.scen][S.meth] });
-  if (S.meth !== "Constant baseline")
-    out.push({ name: "Stock kept: Constant baseline", color: COLORS["Constant baseline"], vals: D.target[S.scen]["Constant baseline"], dash: "6 4" });
+  out.push({ name: "Stock to keep", color: COLORS[S.meth], vals: D.target[S.scen][S.meth] });
   return out;
 }
 function renderLine() {
@@ -227,7 +254,7 @@ function renderLine() {
     cr.setAttribute("x1", x(i)); cr.setAttribute("x2", x(i)); cr.setAttribute("opacity", ".5");
     const t = D.target[S.scen][S.meth][i], a = D.actual[i];
     tip.innerHTML = `<b>Batch ${i + 1}</b><br>` + ser.map(s => `<span class="dot" style="background:${s.color}"></span>${s.name}: <b>${s.vals[i]}</b>`).join("<br>")
-      + `<br>Forecast (${S.meth}): <b>${D.forecast[S.meth][i].toFixed(1)}</b><br>`
+      + `<br>Forecast: <b>${D.forecast[S.meth][i].toFixed(1)}</b><br>`
       + (a <= t ? `<span class="good">✓ enough stock</span>` : `<span class="bad">⚠ short by ${a - t}</span>`);
     const cRect = card.getBoundingClientRect();
     tip.style.display = "block";
@@ -238,7 +265,7 @@ function renderLine() {
   $("hit").onmouseleave = () => { tip.style.display = "none"; $("cross").setAttribute("opacity", "0"); };
   $("hit").onclick = ev => { S.batch = idxAt(ev); render(); };
 
-  $("tblWrap").innerHTML = `<table><thead><tr><th>Batch</th><th>Actual</th><th>Forecast (${S.meth})</th>`
+  $("tblWrap").innerHTML = `<table><thead><tr><th>Batch</th><th>Actual</th><th>Forecast</th>`
     + ser.slice(1).map(s => `<th>${s.name}</th>`).join("") + `</tr></thead><tbody>`
     + D.actual.map((a, i) => `<tr><td>${i + 1}</td><td>${a}</td><td>${D.forecast[S.meth][i].toFixed(1)}</td>`
       + ser.slice(1).map(s => `<td>${s.vals[i]}</td>`).join("") + `</tr>`).join("") + `</tbody></table>`;
@@ -266,11 +293,9 @@ function renderBars() {
     g += `<rect class="bhit" data-i="${i}" x="${cx - slot / 2}" y="${m.t}" width="${slot}" height="${BH - m.t - m.b}" fill="transparent"/>`;
   });
   $("bars").innerHTML = g;
-  $("barCap").textContent = `${S.scen} AOG scenario: holding cost of spare stock + cost of any groundings. Bold bar = selected method.`;
+  $("barCap").textContent = `${S.scen} AOG scenario: holding cost of spare stock + cost of any groundings. Bold bar = method used in the supplier view.`;
   const base = cost(S.scen, "Constant baseline").total_cost_inr_per_year, mine = cost(S.scen, S.meth).total_cost_inr_per_year;
-  $("saving").innerHTML = S.meth === "Constant baseline"
-    ? "Pick a forecast method to see the saving."
-    : `Using ${S.meth} saves about <b>${inr(base - mine)} per year</b>, with the same protection: no shortages in any of the 50 test batches for either method.`;
+  $("saving").innerHTML = `Using ${S.meth} instead of the baseline saves about <b>${inr(base - mine)} per year</b>, with the same protection: no shortages in any of the 50 test batches for either method.`;
   const tip = $("tip2"), card = $("barCard");
   document.querySelectorAll(".bhit").forEach(el => {
     el.onmousemove = ev => {
@@ -292,7 +317,18 @@ $("rules").innerHTML = D.rules.map(r =>
    <span style="color:var(--muted);font-size:13px">(${(r.lift).toFixed(2)}× more often than by chance; seen in ${Math.round(r.support * 100)}% of landings)</span>.
    <br><span style="color:var(--text-2);font-size:14px">Suggestion: when ordering ${r.antecedents}, consider bundling ${r.consequents} from the same supplier.</span></div>`).join("");
 
-function render() { renderTiles(); renderLine(); renderBars(); }
+// ---------- evaluation table ----------
+function renderCompare() {
+  $("cmpCap").textContent = `${S.scen} grounding-cost scenario (change it in the supplier view above).`;
+  $("cmpTable").innerHTML = `<table><thead><tr><th>Method</th><th>Forecast error<br>(units per batch)</th><th>Avg safety buffer</th><th>Batches short</th><th>Yearly cost</th></tr></thead><tbody>`
+    + METHODS.map(m => { const c = cost(S.scen, m);
+        return `<tr${m === S.meth ? ' style="font-weight:650"' : ""}><td><span class="dot" style="background:${COLORS[m]}"></span>${m === "Constant baseline" ? "Baseline (average)" : m}${m === S.meth ? " ✓ used" : ""}</td>`
+          + `<td>${D.mae[m].toFixed(2)}</td><td>${c.avg_safety_buffer_units.toFixed(1)} units</td><td>${c.batches_with_shortage} of 50</td><td>${inr(c.total_cost_inr_per_year)}</td></tr>`; }).join("")
+    + `</tbody></table>`;
+  $("maeNote").innerHTML = `Forecast error = average miss per batch (MAE). The baseline here only averages the training batches, so it is ${D.mae["Constant baseline"].toFixed(2)}. The midterm figure of ${D.midterm_mae.toFixed(2)} averaged all 50 batches, including the one being predicted. Random Forest is slightly more accurate than LightGBM on this simulated data, but the gap (under 1 unit per batch) makes no practical difference.`;
+}
+
+function render() { renderTiles(); renderLine(); renderBars(); renderCompare(); }
 render();
 </script>
 </body>
