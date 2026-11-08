@@ -53,7 +53,14 @@ Each 200-landing batch = one planning period; the shelf is topped up to target =
 Low: 2.05 / 0.20 / 0.10 cr. High: 2.74 / 0.22 / 0.11 cr. **No method ran short in any of the 50 batches**, so all the savings come from holding ~20 fewer spare units for the same protection: about ₹1.85–2.5 cr/yr with LightGBM. Honest caveat: 50 batches is too few to test rare stockouts properly.
 Assumptions to disclose: 2,000 landings/yr (batch = 0.1 yr); orders arrive before the batch starts; each unit short = one 18-h AOG event; the forecast uses the landing's own conditions (in real use, these would come from flight plans/known cycle counts).
 Scale note: forecast demand is ~119 actuators per 200 landings (because the simulated failure rate is 60%). That's unrealistically high for real aircraft, and it doesn't sit well with the midterm's "4 spare units" holding example. Flag it as a dataset artefact.
-Outputs: `reports/docs/phase6_*.csv`, `reports/figures/10_phase6_total_cost.png`, `11_phase6_stock_levels.png`.
+**Order size (EOQ)**, added to fulfil the midterm's "ROP/batch-size formulas" promise: EOQ = √(2 × yearly demand × order cost ÷ holding cost per unit per year of ₹10,80,000). Yearly demand is ~1,194 units for every method, so EOQ is the same whichever forecast is used; the model's value is in the safety buffer, not the order size. Order cost is an **invented assumption** (main ₹50,000):
+| Order cost | EOQ | Orders/yr | Orders per batch |
+|---|---|---|---|
+| ₹25,000 | 7 | 171 | 17 |
+| **₹50,000** | **11** | **109** | **11** |
+| ₹1,00,000 | 15 | 80 | 8 |
+| ₹2,00,000 | 21 | 57 | 6 |
+Outputs: `reports/docs/phase6_*.csv` (incl. `phase6_order_size_eoq.csv`), `reports/figures/10_phase6_total_cost.png`, `11_phase6_stock_levels.png`.
 **Status: Phases 5 and 6 DONE. Next: Phase 7 (supplier dashboard) + final report.**
 
 ### ▶ RESUME HERE (session paused 2026-11-08 evening — now superseded by Phase 5/6 sections above)

@@ -111,6 +111,38 @@ res.to_csv(DOCS / "phase6_policy_comparison.csv", index=False)
 pd.concat(policy_rows).to_csv(DOCS / "phase6_batch_decisions_mid.csv", index=False)
 
 # ---------------------------------------------------------------------------
+# Order size (EOQ - Economic Order Quantity)
+#   "How many units should each purchase order be?"
+#   EOQ = sqrt(2 x yearly demand x cost per order / holding cost per unit per year)
+#   Big orders = fewer orders but more stock sitting on the shelf;
+#   small orders = less stock but more ordering cost. EOQ balances the two.
+# ASSUMPTION: cost of placing one order (admin, freight, inspection) is NOT in
+# the data. Main value Rs 50,000; a range is shown because it is a guess.
+# Note: EOQ depends on AVERAGE demand, which the model barely changes - the
+# model's value is in the safety buffer above, not in the order size.
+# ---------------------------------------------------------------------------
+ORDER_COST_MAIN = 50_000
+ORDER_COST_RANGE = [25_000, 50_000, 100_000, 200_000]
+HOLD_PER_UNIT_YEAR = UNIT_COST * HOLD_RATE                       # Rs 10,80,000
+eoq_rows = []
+for mname, col in METHODS.items():
+    annual_demand = bt[col].mean() * PERIODS_PER_YEAR
+    for s in ORDER_COST_RANGE:
+        q = np.sqrt(2 * annual_demand * s / HOLD_PER_UNIT_YEAR)
+        q_units = max(1, int(round(q)))
+        eoq_rows.append({
+            "method": mname, "order_cost_inr": s, "is_main_assumption": s == ORDER_COST_MAIN,
+            "annual_demand_units": annual_demand, "eoq_units": q_units,
+            "orders_per_year": annual_demand / q_units,
+            "orders_per_batch": annual_demand / q_units / PERIODS_PER_YEAR,
+            # yearly ordering cost + yearly cost of the average "cycle stock" (half an order)
+            "order_plus_cycle_stock_cost_inr_per_year":
+                annual_demand / q_units * s + q_units / 2 * HOLD_PER_UNIT_YEAR,
+        })
+eoq = pd.DataFrame(eoq_rows)
+eoq.to_csv(DOCS / "phase6_order_size_eoq.csv", index=False)
+
+# ---------------------------------------------------------------------------
 # Charts
 # ---------------------------------------------------------------------------
 fig, ax = plt.subplots(figsize=(10, 4.6))
@@ -153,3 +185,11 @@ show = show.rename(columns={"holding_cost_inr_per_year": "hold_cr/yr", "aog_cost
                             "total_cost_inr_per_year": "total_cr/yr", "target_service_level": "service"})
 print(f"Holding cost of 1 extra unit for one batch: Rs {HOLD_PER_UNIT_PERIOD:,.0f}")
 print(show.round({"service": 4, "z": 2, "avg_safety_buffer_units": 1, "avg_spare_units_per_batch": 1}).to_string(index=False))
+
+print("\n=== Order size (EOQ) - LightGBM forecast; order cost is an ASSUMPTION ===")
+e = eoq[eoq.method == "LightGBM"].copy()
+e["cost_lakh/yr"] = (e["order_plus_cycle_stock_cost_inr_per_year"] / 1e5).round(1)
+print(e[["order_cost_inr", "annual_demand_units", "eoq_units", "orders_per_year", "orders_per_batch", "cost_lakh/yr"]]
+      .round({"annual_demand_units": 1, "orders_per_year": 1, "orders_per_batch": 1}).to_string(index=False))
+print("\nAnnual demand by method (EOQ input):",
+      eoq.drop_duplicates("method").set_index("method")["annual_demand_units"].round(1).to_dict())
