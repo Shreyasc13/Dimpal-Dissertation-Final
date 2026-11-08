@@ -61,7 +61,7 @@ Scale note: forecast demand is ~119 actuators per 200 landings (because the simu
 | ₹1,00,000 | 15 | 80 | 8 |
 | ₹2,00,000 | 21 | 57 | 6 |
 Outputs: `reports/docs/phase6_*.csv` (incl. `phase6_order_size_eoq.csv`), `reports/figures/10_phase6_total_cost.png`, `11_phase6_stock_levels.png`.
-**Status: Phases 5 and 6 DONE. Next: Phase 7 (supplier dashboard) + final report.**
+**Status: Phases 5, 6 and 7-dashboard DONE (2026-11-08). Remaining: final dissertation report** (apply the wording fixes listed in this file, add the Limitations paragraph, and write up Phases 5–7).
 
 ### ▶ RESUME HERE (session paused 2026-11-08 evening — now superseded by Phase 5/6 sections above)
 - **Dataset:** downloaded again and placed at `data/raw/landing_gear/landing_gear_maintenance_simulated_data.xlsx`. Checked on 2026-11-08: 10,000×12, no missing values. Failure rates, runway rates, per-runway correlations (0.814/0.823/0.827) and baseline (mean 119.44, MAE 5.52) all match the report exactly.
@@ -81,7 +81,7 @@ Outputs: `reports/docs/phase6_*.csv` (incl. `phase6_order_size_eoq.csv`), `repor
 **Not started yet:**
 - **Phase 5 — LightGBM model training & tuning.** Nothing trained yet. Only the baseline (constant-average predictor, MAE 5.52) exists. This is the most important next technical step.
 - **Phase 6 — Reorder-point engine**, validated against the AOG cost model (turn the forecast into an actual stock/reorder decision).
-- **Phase 7 — Supplier dashboard** + final dissertation writeup (there's an empty `dashboard/` folder, nothing built in it yet).
+- ~~Phase 5, Phase 6, Phase 7 dashboard~~ — DONE 2026-11-08, see sections above. **Still to do: final dissertation writeup.**
 
 **Open items needing the user's decision / input:**
 - `reports/2024_MT_13052_Midterm_Dissertation.docx` — the user's manually-renamed/edited copy of the report has some content that looks accidentally deleted (Limitations section, Scope section, some Implementation Details table rows, the Apriori chart/Figure 6, broken grammar from stripped em-dashes) mixed with genuine intentional edits (reformatted cover, signature block moved, List of Figures/Tables removed). User was asked whether to restore the missing parts and never answered — **do not silently "fix" this file; ask first.**
@@ -164,7 +164,8 @@ These don't sum to 100% because each landing gets 4 independent yes/no checks �
 - `reports/Midterm_Report_DemandForecasting_DimpalShetty.docx` — canonical generated report (15 sections, Abstract + ToC, built via a Node.js `docx`-package script).
 - `reports/2024_MT_13052_Midterm_Dissertation.docx` — user's manually-edited renamed copy. **See "Open items" above — has unresolved content gaps, do not edit without asking.**
 - `reports/Midterm_Viva_DimpalShetty.pptx` — 16-slide viva deck with speaker notes baked into each slide's Notes pane, built with python-pptx (matches the Claude Artifact deck's content/design). Ready to upload to Google Drive → "Open with Google Slides" for a native editable copy.
-- `dashboard/` — empty, this is where Phase 7's supplier dashboard will eventually go.
+- `dashboard/` — Phase 7 supplier dashboard. `build_dashboard.py` reads the Phase 5/6 CSVs, re-checks yearly costs against Phase 6 (assert), and injects the data into `dashboard_template.html`, writing **`supplier_dashboard.html`**: a single offline file (no CDN, works in a viva without internet). Controls: AOG scenario, forecast method, order cost, batch slider. Tiles: forecast, stock to keep, safety buffer, EOQ order plan, actual outcome, yearly cost. Also has a stock-vs-demand line chart (hover + table view), a yearly-cost bar chart, optional Apriori bundling panel, and an assumptions list. Light/dark mode. Rebuild order: load_real_data → phase5 → phase6 → build_dashboard.
+- `src/phase5_lightgbm.py`, `src/phase6_reorder_engine.py` — see Phase 5/6 sections above. Python env: `.venv` (Python 3.12 64-bit), `requirements.txt`.
 
 ## Literature referenced (all verified as real papers)
 

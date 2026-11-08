@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Actuator Stock Dashboard</title>
+<style>
+:root {
+  color-scheme: light;
+  --bg: #f4f3f0; --surface: #fcfcfb; --border: #e3e1dc;
+  --text: #0b0b0b; --text-2: #52514e; --muted: #7d7c77; --grid: #e8e7e3;
+  --s-lgb: #2a78d6; --s-base: #eb6834; --s-rf: #1baf7a;
+  --good: #1f7a3a; --bad: #b42318; --warn-bg: #fff4e0; --warn-border: #f0c36d;
+}
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) {
+    color-scheme: dark;
+    --bg: #121211; --surface: #1a1a19; --border: #2f2f2d;
+    --text: #f0efec; --text-2: #c3c2b7; --muted: #9a998f; --grid: #2c2c2a;
+    --s-lgb: #3987e5; --s-base: #d95926; --s-rf: #199e70;
+    --good: #5cc27a; --bad: #f07067; --warn-bg: #2b2414; --warn-border: #7a5c1e;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #121211; --surface: #1a1a19; --border: #2f2f2d;
+  --text: #f0efec; --text-2: #c3c2b7; --muted: #9a998f; --grid: #2c2c2a;
+  --s-lgb: #3987e5; --s-base: #d95926; --s-rf: #199e70;
+  --good: #5cc27a; --bad: #f07067; --warn-bg: #2b2414; --warn-border: #7a5c1e;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text);
+  font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+.wrap { max-width: 1180px; margin: 0 auto; padding: 24px 16px 48px; }
+h1 { font-size: 24px; margin: 0 0 4px; }
+.sub { color: var(--text-2); margin: 0 0 16px; }
+.banner { background: var(--warn-bg); border: 1px solid var(--warn-border); border-radius: 8px;
+  padding: 10px 14px; margin-bottom: 18px; color: var(--text); font-size: 14px; }
+.controls { display: flex; flex-wrap: wrap; gap: 14px 22px; align-items: end;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; margin-bottom: 16px; }
+.controls label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--text-2); }
+select, input[type=range] { font: inherit; color: var(--text); background: var(--surface);
+  border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; min-width: 170px; }
+input[type=range] { padding: 0; min-width: 220px; accent-color: var(--s-lgb); }
+.tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
+@media (max-width: 860px) { .tiles { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 520px) { .tiles { grid-template-columns: 1fr; } }
+.tile { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+.tile .k { font-size: 13px; color: var(--text-2); }
+.tile .v { font-size: 28px; font-weight: 650; margin: 2px 0; font-variant-numeric: tabular-nums; }
+.tile .n { font-size: 13px; color: var(--muted); }
+.good { color: var(--good); } .bad { color: var(--bad); }
+.grid2 { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 16px; }
+@media (max-width: 860px) { .grid2 { grid-template-columns: 1fr; } }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; position: relative; min-width: 0; }
+.card h2 { font-size: 16px; margin: 0 0 2px; }
+.card .cap { font-size: 13px; color: var(--text-2); margin: 0 0 10px; }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 13px; color: var(--text-2); margin-bottom: 6px; }
+.legend i { display: inline-block; width: 18px; height: 3px; border-radius: 2px; vertical-align: middle; margin-right: 6px; }
+svg { display: block; width: 100%; height: auto; overflow: visible; }
+svg text { fill: var(--muted); font-size: 11px; }
+.tip { position: absolute; pointer-events: none; background: var(--surface); color: var(--text);
+  border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; font-size: 13px;
+  box-shadow: 0 4px 14px rgba(0,0,0,.12); display: none; white-space: nowrap; z-index: 5; }
+.tip b { font-variant-numeric: tabular-nums; }
+.dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; }
+button.link { background: none; border: none; color: var(--s-lgb); cursor: pointer; padding: 0; font: inherit; font-size: 13px; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 8px; }
+th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--border); font-variant-numeric: tabular-nums; }
+th { color: var(--text-2); font-weight: 600; }
+.tablewrap { max-height: 260px; overflow: auto; }
+details summary { cursor: pointer; font-weight: 600; font-size: 16px; }
+details summary span { font-weight: 400; color: var(--text-2); font-size: 13px; }
+ul.assume { margin: 8px 0 0; padding-left: 20px; color: var(--text-2); font-size: 14px; }
+ul.assume li { margin: 4px 0; }
+.rule { padding: 10px 0; border-bottom: 1px solid var(--border); }
+.rule:last-child { border-bottom: none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Landing Gear Actuator: Supplier Stock Dashboard</h1>
+  <p class="sub">How many actuators to keep on the shelf for each batch of 200 landings, and what it costs. Dimpal Shetty · 2024MT13052 · BITS Pilani</p>
+  <div class="banner"><b>Please note:</b> this dashboard is built on a <b>simulated</b> public dataset (Kaggle). Unit cost, fleet utilisation, AOG costs and order cost are <b>assumptions</b>, listed at the bottom. It demonstrates the method; real airline data is needed to confirm the numbers.</div>
+
+  <div class="controls">
+    <label>Grounding (AOG) cost scenario
+      <select id="scen"></select></label>
+    <label>Forecast method
+      <select id="meth"></select></label>
+    <label>Cost of placing one order (assumed)
+      <select id="ocost"></select></label>
+    <label><span>Planning batch: <b id="bLabel"></b></span>
+      <input type="range" id="batch" min="0" max="49" value="0"></label>
+  </div>
+
+  <div class="tiles" id="tiles"></div>
+
+  <div class="grid2">
+    <div class="card" id="lineCard">
+      <h2>Stock kept on the shelf vs. actual demand</h2>
+      <p class="cap">Each point is one batch of 200 landings, forecast by a model that never saw that batch. Hover for details; click to select a batch.</p>
+      <div class="legend" id="lineLegend"></div>
+      <svg id="line" viewBox="0 0 720 300" role="img" aria-label="Line chart of actual demand and stock kept per batch"></svg>
+      <button class="link" id="tblBtn">Show as table</button>
+      <div class="tablewrap" id="tblWrap" hidden></div>
+      <div class="tip" id="tip"></div>
+    </div>
+    <div class="card" id="barCard">
+      <h2>Yearly cost by method</h2>
+      <p class="cap" id="barCap"></p>
+      <svg id="bars" viewBox="0 0 340 300" role="img" aria-label="Bar chart of yearly cost per forecast method"></svg>
+      <p class="cap" id="saving" style="margin-top:8px"></p>
+      <div class="tip" id="tip2"></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:16px">
+    <details>
+      <summary>Bundling suggestions: parts that usually fail together <span>(optional, from Apriori companion-part mining)</span></summary>
+      <div id="rules" style="margin-top:8px"></div>
+    </details>
+  </div>
+
+  <div class="card">
+    <h2>Assumptions and limitations</h2>
+    <ul class="assume">
+      <li><b>Simulated data:</b> the Kaggle file is simulated. Each failure flag follows a fixed rule (actuator: load &gt; 70 or landing cycles &gt; 401), which is why the forecasts are so accurate.</li>
+      <li><b>Unit cost</b> ₹43,20,000 per actuator; <b>holding cost</b> 25% per year, so one extra unit for one batch costs ₹1,08,000.</li>
+      <li><b>Fleet utilisation</b> 2,000 landings per year, so one batch of 200 landings ≈ 0.1 year (about 36 days).</li>
+      <li><b>AOG cost</b> from public industry ranges, converted at ₹96/US$, with an 18-hour grounding per shortage. Each unit short counts as one grounding.</li>
+      <li><b>Order cost</b> (admin, freight, inspection) is a guess; change it above to see the effect on order size.</li>
+      <li>Parts ordered for a batch are assumed to arrive before that batch starts.</li>
+      <li>The forecast uses each landing's conditions (load, cycles, …). In real use these would come from flight plans and known aircraft cycle counts.</li>
+      <li>Only 50 batches exist, which is too few to test rare stockouts properly. No method ran short in this test.</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+const D = /*__DATA__*/null;
+const COLORS = { "LightGBM": "var(--s-lgb)", "Random Forest": "var(--s-rf)", "Constant baseline": "var(--s-base)" };
+const METHODS = ["LightGBM", "Random Forest", "Constant baseline"];
+const $ = id => document.getElementById(id);
+const S = { scen: "Mid", meth: "LightGBM", ocost: 50000, batch: 0 };
+
+function inr(v) {
+  if (v >= 1e7) return "₹" + (v / 1e7).toFixed(2) + " cr";
+  if (v >= 1e5) return "₹" + (v / 1e5).toFixed(1) + " lakh";
+  return "₹" + Math.round(v).toLocaleString("en-IN");
+}
+function opt(sel, values, labels, cur) {
+  sel.innerHTML = values.map((v, i) => `<option value="${v}"${v == cur ? " selected" : ""}>${labels[i]}</option>`).join("");
+}
+function cost(scen, m) { return D.costs.find(r => r.scenario === scen && r.method === m); }
+function eoqRow(m, oc) { return D.eoq.find(r => r.method === m && r.order_cost_inr === oc); }
+
+// ---------- controls ----------
+const scenNames = Object.keys(D.scenarios);
+opt($("scen"), scenNames, scenNames.map(s => `${s}: ${inr(D.scenarios[s].aog_per_hr)}/hr → ${inr(D.scenarios[s].per_event)} per event`), S.scen);
+opt($("meth"), METHODS, METHODS, S.meth);
+const ocs = [...new Set(D.eoq.map(r => r.order_cost_inr))];
+opt($("ocost"), ocs, ocs.map(v => inr(v) + (v === 50000 ? " (main assumption)" : "")), S.ocost);
+$("scen").onchange = e => { S.scen = e.target.value; render(); };
+$("meth").onchange = e => { S.meth = e.target.value; render(); };
+$("ocost").onchange = e => { S.ocost = +e.target.value; render(); };
+$("batch").oninput = e => { S.batch = +e.target.value; render(); };
+
+// ---------- tiles ----------
+function renderTiles() {
+  const b = S.batch, f = D.forecast[S.meth][b], t = D.target[S.scen][S.meth][b], a = D.actual[b];
+  const buf = t - f, e = eoqRow(S.meth, S.ocost), sc = D.scenarios[S.scen];
+  const ok = a <= t;
+  const c = cost(S.scen, S.meth), cb = cost(S.scen, "Constant baseline");
+  const tiles = [
+    ["Forecast demand", f.toFixed(1), "actuators needed in this batch"],
+    ["Stock to keep", t, `forecast + safety buffer (aim: in stock ${(sc.service * 100).toFixed(2)}% of the time)`],
+    ["Safety buffer", "+" + buf.toFixed(1), "extra units kept \"just in case\""],
+    ["Order plan", `${e.eoq_units} units`, `per order (EOQ), about ${e.orders_per_batch.toFixed(1)} orders per batch`],
+    ["What actually happened", a, ok ? `<span class="good">✓ Enough stock: ${t - a} spare</span>` : `<span class="bad">⚠ Short by ${a - t}: grounding risk</span>`],
+    ["Yearly cost, this method", inr(c.total_cost_inr_per_year),
+      S.meth === "Constant baseline" ? "no forecast model" : `vs ${inr(cb.total_cost_inr_per_year)} without a model`],
+  ];
+  $("tiles").innerHTML = tiles.map(([k, v, n]) => `<div class="tile"><div class="k">${k}</div><div class="v">${v}</div><div class="n">${n}</div></div>`).join("");
+  $("bLabel").textContent = `${b + 1} of 50`;
+  $("batch").value = b;
+}
+
+// ---------- line chart ----------
+const W = 720, H = 300, M = { l: 44, r: 12, t: 10, b: 30 };
+function series() {
+  const out = [{ name: "Actual demand", color: "var(--text)", vals: D.actual, dots: true }];
+  out.push({ name: `Stock kept: ${S.meth}`, color: COLORS[S.meth], vals: D.target[S.scen][S.meth] });
+  if (S.meth !== "Constant baseline")
+    out.push({ name: "Stock kept: Constant baseline", color: COLORS["Constant baseline"], vals: D.target[S.scen]["Constant baseline"], dash: "6 4" });
+  return out;
+}
+function renderLine() {
+  const ser = series(), n = D.actual.length;
+  const all = ser.flatMap(s => s.vals);
+  const lo = Math.floor((Math.min(...all) - 3) / 10) * 10, hi = Math.ceil((Math.max(...all) + 3) / 10) * 10;
+  const x = i => M.l + i * (W - M.l - M.r) / (n - 1);
+  const y = v => H - M.b - (v - lo) / (hi - lo) * (H - M.t - M.b);
+  let g = "";
+  for (let v = lo; v <= hi; v += 10)
+    g += `<line x1="${M.l}" x2="${W - M.r}" y1="${y(v)}" y2="${y(v)}" stroke="var(--grid)"/><text x="${M.l - 6}" y="${y(v) + 4}" text-anchor="end">${v}</text>`;
+  for (let i = 0; i < n; i += 10) g += `<text x="${x(i)}" y="${H - 10}" text-anchor="middle">${i + 1}</text>`;
+  g += `<text x="${W - M.r}" y="${H - 10}" text-anchor="end">batch →</text>`;
+  g += `<line x1="${x(S.batch)}" x2="${x(S.batch)}" y1="${M.t}" y2="${H - M.b}" stroke="var(--muted)" stroke-dasharray="2 3"/>`;
+  for (const s of ser) {
+    const d = s.vals.map((v, i) => `${i ? "L" : "M"}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join("");
+    g += `<path d="${d}" fill="none" stroke="${s.color}" stroke-width="2" ${s.dash ? `stroke-dasharray="${s.dash}"` : ""} stroke-linejoin="round"/>`;
+    if (s.dots) g += s.vals.map((v, i) => `<circle cx="${x(i)}" cy="${y(v)}" r="3" fill="${s.color}" stroke="var(--surface)" stroke-width="1.5"/>`).join("");
+  }
+  g += `<line id="cross" x1="0" x2="0" y1="${M.t}" y2="${H - M.b}" stroke="var(--text-2)" opacity="0"/>`;
+  g += `<rect id="hit" x="${M.l}" y="${M.t}" width="${W - M.l - M.r}" height="${H - M.t - M.b}" fill="transparent" style="cursor:crosshair"/>`;
+  $("line").innerHTML = g;
+  $("lineLegend").innerHTML = ser.map(s => `<span><i style="background:${s.color}"></i>${s.name}</span>`).join("");
+
+  const svg = $("line"), tip = $("tip"), card = $("lineCard");
+  const idxAt = ev => {
+    const r = svg.getBoundingClientRect(), px = (ev.clientX - r.left) * W / r.width;
+    return Math.max(0, Math.min(n - 1, Math.round((px - M.l) / ((W - M.l - M.r) / (n - 1)))));
+  };
+  $("hit").onmousemove = ev => {
+    const i = idxAt(ev), cr = $("cross");
+    cr.setAttribute("x1", x(i)); cr.setAttribute("x2", x(i)); cr.setAttribute("opacity", ".5");
+    const t = D.target[S.scen][S.meth][i], a = D.actual[i];
+    tip.innerHTML = `<b>Batch ${i + 1}</b><br>` + ser.map(s => `<span class="dot" style="background:${s.color}"></span>${s.name}: <b>${s.vals[i]}</b>`).join("<br>")
+      + `<br>Forecast (${S.meth}): <b>${D.forecast[S.meth][i].toFixed(1)}</b><br>`
+      + (a <= t ? `<span class="good">✓ enough stock</span>` : `<span class="bad">⚠ short by ${a - t}</span>`);
+    const cRect = card.getBoundingClientRect();
+    tip.style.display = "block";
+    let left = ev.clientX - cRect.left + 14;
+    if (left + tip.offsetWidth > cRect.width - 8) left = ev.clientX - cRect.left - tip.offsetWidth - 14;
+    tip.style.left = left + "px"; tip.style.top = (ev.clientY - cRect.top + 12) + "px";
+  };
+  $("hit").onmouseleave = () => { tip.style.display = "none"; $("cross").setAttribute("opacity", "0"); };
+  $("hit").onclick = ev => { S.batch = idxAt(ev); render(); };
+
+  $("tblWrap").innerHTML = `<table><thead><tr><th>Batch</th><th>Actual</th><th>Forecast (${S.meth})</th>`
+    + ser.slice(1).map(s => `<th>${s.name}</th>`).join("") + `</tr></thead><tbody>`
+    + D.actual.map((a, i) => `<tr><td>${i + 1}</td><td>${a}</td><td>${D.forecast[S.meth][i].toFixed(1)}</td>`
+      + ser.slice(1).map(s => `<td>${s.vals[i]}</td>`).join("") + `</tr>`).join("") + `</tbody></table>`;
+}
+$("tblBtn").onclick = () => { const w = $("tblWrap"); w.hidden = !w.hidden; $("tblBtn").textContent = w.hidden ? "Show as table" : "Hide table"; };
+
+// ---------- bar chart ----------
+function renderBars() {
+  const BW = 340, BH = 300, m = { l: 48, r: 8, t: 34, b: 40 };
+  const rows = METHODS.map(mm => ({ m: mm, c: cost(S.scen, mm) }));
+  const max = Math.max(...rows.map(r => r.c.total_cost_inr_per_year)) / 1e7;
+  const top = Math.ceil(max * 2) / 2;
+  const y = v => BH - m.b - v / top * (BH - m.t - m.b);
+  const slot = (BW - m.l - m.r) / rows.length, bw = Math.min(56, slot * 0.55);
+  let g = "";
+  for (let v = 0; v <= top + 1e-9; v += 0.5)
+    g += `<line x1="${m.l}" x2="${BW - m.r}" y1="${y(v)}" y2="${y(v)}" stroke="var(--grid)"/><text x="${m.l - 6}" y="${y(v) + 4}" text-anchor="end">${v.toFixed(1)}</text>`;
+  g += `<text x="${m.l - 40}" y="${m.t - 8}">₹ crore / year</text>`;
+  rows.forEach((r, i) => {
+    const v = r.c.total_cost_inr_per_year / 1e7, cx = m.l + slot * (i + .5), h = BH - m.b - y(v);
+    const r4 = Math.min(4, h);
+    g += `<path d="M${cx - bw / 2},${BH - m.b} V${y(v) + r4} q0,-${r4} ${r4},-${r4} H${cx + bw / 2 - r4} q${r4},0 ${r4},${r4} V${BH - m.b} Z" fill="${COLORS[r.m]}" ${r.m === S.meth ? "" : 'opacity=".55"'}/>`;
+    g += `<text x="${cx}" y="${y(v) - 6}" text-anchor="middle" style="fill:var(--text);font-weight:600">${v.toFixed(2)}</text>`;
+    g += `<text x="${cx}" y="${BH - m.b + 16}" text-anchor="middle" style="fill:var(--text-2)">${r.m === "Constant baseline" ? "Baseline" : r.m}</text>`;
+    g += `<rect class="bhit" data-i="${i}" x="${cx - slot / 2}" y="${m.t}" width="${slot}" height="${BH - m.t - m.b}" fill="transparent"/>`;
+  });
+  $("bars").innerHTML = g;
+  $("barCap").textContent = `${S.scen} AOG scenario: holding cost of spare stock + cost of any groundings. Bold bar = selected method.`;
+  const base = cost(S.scen, "Constant baseline").total_cost_inr_per_year, mine = cost(S.scen, S.meth).total_cost_inr_per_year;
+  $("saving").innerHTML = S.meth === "Constant baseline"
+    ? "Pick a forecast method to see the saving."
+    : `Using ${S.meth} saves about <b>${inr(base - mine)} per year</b>, with the same protection: no shortages in any of the 50 test batches for either method.`;
+  const tip = $("tip2"), card = $("barCard");
+  document.querySelectorAll(".bhit").forEach(el => {
+    el.onmousemove = ev => {
+      const r = rows[+el.dataset.i];
+      tip.innerHTML = `<b><span class="dot" style="background:${COLORS[r.m]}"></span>${r.m}</b><br>Holding: <b>${inr(r.c.holding_cost_inr_per_year)}</b>/yr<br>Groundings: <b>${inr(r.c.aog_cost_inr_per_year)}</b>/yr<br>Avg safety buffer: <b>${r.c.avg_safety_buffer_units.toFixed(1)}</b> units<br>Batches short: <b>${r.c.batches_with_shortage}</b> of 50`;
+      const cr = card.getBoundingClientRect();
+      tip.style.display = "block";
+      let left = ev.clientX - cr.left + 12;
+      if (left + tip.offsetWidth > cr.width - 8) left = ev.clientX - cr.left - tip.offsetWidth - 12;
+      tip.style.left = left + "px"; tip.style.top = (ev.clientY - cr.top + 12) + "px";
+    };
+    el.onmouseleave = () => tip.style.display = "none";
+  });
+}
+
+// ---------- bundling ----------
+$("rules").innerHTML = D.rules.map(r =>
+  `<div class="rule">When <b>${r.antecedents}</b> is flagged, <b>${r.consequents}</b> is also flagged <b>${Math.round(r.confidence * 100)}%</b> of the time
+   <span style="color:var(--muted);font-size:13px">(${(r.lift).toFixed(2)}× more often than by chance; seen in ${Math.round(r.support * 100)}% of landings)</span>.
+   <br><span style="color:var(--text-2);font-size:14px">Suggestion: when ordering ${r.antecedents}, consider bundling ${r.consequents} from the same supplier.</span></div>`).join("");
+
+function render() { renderTiles(); renderLine(); renderBars(); }
+render();
+</script>
+</body>
+</html>
