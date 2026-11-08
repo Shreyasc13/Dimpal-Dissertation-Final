@@ -103,7 +103,7 @@ ax.plot(batch_counts.index, batch_counts[FOCUS_PART], marker="o", markersize=3, 
 ax.axhline(baseline_pred, color=AMBER, linestyle="--", linewidth=1.4, label=f"Constant baseline ({baseline_pred:.1f}/batch)")
 ax.set_xlabel(f"Batch of {BATCH_SIZE} landings (sequential, not calendar months)")
 ax.set_ylabel(f"{FOCUS_PART} replacements per batch")
-ax.set_title(f"Baseline benchmark — MAE = {mae:.2f} units/batch of {BATCH_SIZE} landings")
+ax.set_title(f"Baseline benchmark: MAE = {mae:.2f} units per batch of {BATCH_SIZE} landings")
 ax.legend(fontsize=9)
 fig.tight_layout()
 fig.savefig(FIG / "03_baseline_forecast.png", dpi=160)
@@ -141,8 +141,9 @@ for _, r in abc_xyz.iterrows():
                 textcoords="offset points", xytext=(10, 4), fontsize=9)
 ax.set_xlabel("Demand coefficient of variation across batches  (X: stable → Z: erratic)")
 ax.set_ylabel("Annual consumption value (₹ crore)")
-ax.set_title("ABC/XYZ classification — real failure rates, assumed 2,000 landings/yr")
+ax.set_title("ABC/XYZ classification, assuming 2,000 landings per year")
 ax.set_xlim(left=0)
+ax.set_ylim(top=abc_xyz["annual_value_inr"].max() / 1e7 * 1.15)  # headroom so the top label clears the title
 fig.tight_layout()
 fig.savefig(FIG / "04_abc_xyz_matrix.png", dpi=160)
 plt.close(fig)
@@ -166,7 +167,7 @@ top_rules = rules_out.head(6).iloc[::-1]
 fig, ax = plt.subplots(figsize=(9.0, 4.2))
 labels = [f"{a} → {c}" for a, c in zip(top_rules["antecedents"], top_rules["consequents"])]
 ax.barh(labels, top_rules["lift"], color=TEAL)
-ax.set_xlabel("Lift"); ax.set_title("Real companion-part co-occurrence rules (Apriori)", fontsize=12)
+ax.set_xlabel("Lift"); ax.set_title("Companion-part rules found by Apriori", fontsize=12)
 fig.tight_layout()
 fig.savefig(FIG / "05_apriori_rules.png", dpi=160)
 plt.close(fig)
@@ -196,7 +197,7 @@ ax.bar(aog_df["scenario"], aog_df["exposure_per_event_inr"] / 1e5, color=[GREY, 
 ax.axhline(holding_cost_annual_inr / 1e5, color=AMBER, linestyle="--", linewidth=1.4,
            label=f"Annual holding cost of 4 spare Landing Gear Actuators (₹{holding_cost_annual_inr/1e5:.1f} lakh)")
 ax.set_ylabel("₹ lakh")
-ax.set_title("Per-event AOG cost exposure vs. annual holding cost — Landing Gear Actuator", fontsize=12)
+ax.set_title("Cost of one AOG event vs. yearly holding cost, Landing Gear Actuator", fontsize=12)
 ax.yaxis.set_major_formatter(mticker.FormatStrFormatter("%.1f"))
 ax.tick_params(axis="x", labelsize=9)
 ax.legend(fontsize=8, loc="upper left")

@@ -50,7 +50,7 @@ arrow(mba, dash, "right", "left", dashed=True)
 ax.text(4.2, 0.75, "Optional: shown only if a supplier chooses to see bundling suggestions",
         fontsize=8.3, color="#6b7482", style="italic")
 
-ax.text(0.15, 5.35, "System Architecture — Predictive Spare-Parts Demand Forecasting Pipeline",
+ax.text(0.15, 5.35, "System Architecture: Predictive Spare-Parts Demand Forecasting Pipeline",
         fontsize=13, fontweight="bold", color="#1f2d3a")
 
 ax.text(0.15, 0.2, "Excluded from scope: live telemetry / weather API streaming",
