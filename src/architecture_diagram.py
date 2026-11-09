@@ -31,7 +31,7 @@ def arrow(b1, b2, side1="right", side2="left", color="#5a6472", dashed=False):
                                   linestyle=(0, (5, 3)) if dashed else "solid"))
 
 # --- Primary path (solid): dataset -> preprocessing -> classification -> forecast -> cost -> dashboard ---
-d1 = box(0.15, 3.55, 1.75, 1.5, "Landing-gear\nmaintenance dataset\n(Kaggle, 10,000\nreal landings)", TEAL)
+d1 = box(0.15, 3.55, 1.75, 1.5, "Landing-gear\nmaintenance dataset\n(Kaggle, 10,000\nlandings)", TEAL)
 pp = box(2.15, 3.65, 1.75, 1.3, "Preprocessing &\nfeature engineering\n(flag → part mapping,\nseverity features)", NAVY)
 cls = box(4.15, 3.65, 1.85, 1.3, "Value/Volatility\nClassification\n(picks the one part\nworth forecasting)", NAVY)
 fc = box(6.25, 3.65, 1.75, 1.3, "Demand Forecast\nModel\n(LightGBM)", NAVY)
